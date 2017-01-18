@@ -151,7 +151,7 @@ TEST(LowDiscrepancy, ElementaryIntervals) {
             // in each dimension.
             int nx = 1 << i, ny = 1 << (logSamples - i);
 
-            std::vector<int> count(1 << logSamples, 0);
+            std::vector<int> count(size_t(1) << logSamples, 0);
             for (const Point2f &s : samples) {
                 // Map the sample to an interval
                 Float x = nx * s.x, y = ny * s.y;
@@ -171,17 +171,17 @@ TEST(LowDiscrepancy, ElementaryIntervals) {
         }
     };
 
-    for (int logSamples = 2; logSamples <= 10; ++logSamples) {
+    for (size_t logSamples = 2; logSamples <= 10; ++logSamples) {
         checkSampler(
             "MaxMinDistSampler",
-            std::unique_ptr<Sampler>(new MaxMinDistSampler(1 << logSamples, 2)),
+            std::unique_ptr<Sampler>(new MaxMinDistSampler(size_t(1) << logSamples, 2)),
             logSamples);
         checkSampler("ZeroTwoSequenceSampler",
                      std::unique_ptr<Sampler>(
-                         new ZeroTwoSequenceSampler(1 << logSamples, 2)),
+                         new ZeroTwoSequenceSampler(size_t(1) << logSamples, 2)),
                      logSamples);
         checkSampler("Sobol", std::unique_ptr<Sampler>(new SobolSampler(
-                                  1 << logSamples,
+                                  size_t(1) << logSamples,
                                   Bounds2i(Point2i(0, 0), Point2i(10, 10)))),
                      logSamples);
     }
@@ -192,7 +192,7 @@ TEST(MaxMinDist, MinDist) {
     // to 2^16 samples.
     for (int logSamples = 2; logSamples <= 10; ++logSamples) {
         // Store a pixel's worth of samples in the vector s.
-        MaxMinDistSampler mm(1 << logSamples, 2);
+        MaxMinDistSampler mm(size_t(1) << logSamples, 2);
         mm.StartPixel(Point2i(0, 0));
         std::vector<Point2f> s;
         do {
