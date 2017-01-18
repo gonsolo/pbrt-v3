@@ -5,3 +5,5 @@ src/objs
 .sconsign.dblite
 build
 .DS_Store
+*.dir
+x64
