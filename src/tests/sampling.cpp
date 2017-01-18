@@ -138,7 +138,7 @@ TEST(LowDiscrepancy, Sobol) {
 // TODO: check Halton (where the elementary intervals are (2^i, 3^j)).
 TEST(LowDiscrepancy, ElementaryIntervals) {
     auto checkSampler = [](const char *name, std::unique_ptr<Sampler> sampler,
-                           int logSamples) {
+                           size_t logSamples) {
         // Get all of the samples for a pixel.
         sampler->StartPixel(Point2i(0, 0));
         std::vector<Point2f> samples;
