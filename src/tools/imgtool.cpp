@@ -17,7 +17,6 @@
 extern "C" {
 #include "ext/ArHosekSkyModel.h"
 }
-#include <glog/logging.h>
 
 using namespace pbrt;
 
