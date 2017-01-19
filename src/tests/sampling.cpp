@@ -285,7 +285,7 @@ TEST(Distribution1D, Continuous) {
     EXPECT_EQ(5, dist.Count());
 
     Float pdf;
-    int offset;
+    size_t offset;
     EXPECT_EQ(0., dist.SampleContinuous(0., &pdf, &offset));
     EXPECT_FLOAT_EQ(dist.Count() * 1. / 16., pdf);
     EXPECT_EQ(0, offset);
