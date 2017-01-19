@@ -41,6 +41,20 @@
 // core/pbrt.h*
 #include "port.h"
 
+// Platform-specific definitions
+#if defined(PBRT_IS_MSVC)
+#pragma warning(disable : 4305)  // double constant assigned to float
+#pragma warning(disable : 4244)  // int -> float conversion
+#pragma warning(disable : 4843)  // double -> float conversion
+#include <float.h>
+#include <intrin.h>
+#if defined(PBRT_IS_MSVC2015)
+#pragma warning(disable : 4005) // macro redefinition in Windows system files
+#pragma warning(disable : 4244) // truncation in type_traits
+#endif
+#endif
+#include <stdint.h>
+
 // Global Include Files
 #include <type_traits>
 #include <algorithm>
@@ -62,18 +76,6 @@
 #include <string.h>
 #include <glog/logging.h>
 
-// Platform-specific definitions
-#if defined(PBRT_IS_MSVC)
-#include <float.h>
-#include <intrin.h>
-#pragma warning(disable : 4305)  // double constant assigned to float
-#pragma warning(disable : 4244)  // int -> float conversion
-#pragma warning(disable : 4843)  // double -> float conversion
-#if defined(PBRT_IS_MSVC2015)
-#pragma warning(disable : 4005) // macro redefinition in Windows system files
-#endif
-#endif
-#include <stdint.h>
 
 // Global Macros
 #define ALLOCA(TYPE, COUNT) (TYPE *) alloca((COUNT) * sizeof(TYPE))

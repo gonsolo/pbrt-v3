@@ -60,7 +60,7 @@ struct BVHPrimitiveInfo {
 
 struct BVHBuildNode {
     // BVHBuildNode Public Methods
-    void InitLeaf(int first, int n, const Bounds3f &b) {
+    void InitLeaf(size_t first, size_t n, const Bounds3f &b) {
         firstPrimOffset = first;
         nPrimitives = n;
         bounds = b;
@@ -79,11 +79,12 @@ struct BVHBuildNode {
     }
     Bounds3f bounds;
     BVHBuildNode *children[2];
-    int splitAxis, firstPrimOffset, nPrimitives;
+	int splitAxis;
+	size_t firstPrimOffset, nPrimitives;
 };
 
 struct MortonPrimitive {
-    int primitiveIndex;
+    size_t primitiveIndex;
     uint32_t mortonCode;
 };
 
@@ -95,7 +96,7 @@ struct LBVHTreelet {
 struct LinearBVHNode {
     Bounds3f bounds;
     union {
-        int primitivesOffset;   // leaf
+        int32_t primitivesOffset;   // leaf
         int secondChildOffset;  // interior
     };
     uint16_t nPrimitives;  // 0 -> interior node
@@ -231,22 +232,23 @@ struct BucketInfo {
 };
 
 BVHBuildNode *BVHAccel::recursiveBuild(
-    MemoryArena &arena, std::vector<BVHPrimitiveInfo> &primitiveInfo, int start,
-    int end, int *totalNodes,
+    MemoryArena &arena, std::vector<BVHPrimitiveInfo> &primitiveInfo, size_t start,
+    size_t end, int *totalNodes,
     std::vector<std::shared_ptr<Primitive>> &orderedPrims) {
     CHECK_NE(start, end);
     BVHBuildNode *node = arena.Alloc<BVHBuildNode>();
     (*totalNodes)++;
     // Compute bounds of all primitives in BVH node
     Bounds3f bounds;
-    for (int i = start; i < end; ++i)
+    for (size_t i = start; i < end; ++i)
         bounds = Union(bounds, primitiveInfo[i].bounds);
-    int nPrimitives = end - start;
+	assert(start <= end);
+	size_t nPrimitives = end - start;
     if (nPrimitives == 1) {
         // Create leaf _BVHBuildNode_
-        int firstPrimOffset = orderedPrims.size();
-        for (int i = start; i < end; ++i) {
-            int primNum = primitiveInfo[i].primitiveNumber;
+        size_t firstPrimOffset = orderedPrims.size();
+        for (size_t i = start; i < end; ++i) {
+            size_t primNum = primitiveInfo[i].primitiveNumber;
             orderedPrims.push_back(primitives[primNum]);
         }
         node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
@@ -254,17 +256,17 @@ BVHBuildNode *BVHAccel::recursiveBuild(
     } else {
         // Compute bound of primitive centroids, choose split dimension _dim_
         Bounds3f centroidBounds;
-        for (int i = start; i < end; ++i)
+        for (size_t i = start; i < end; ++i)
             centroidBounds = Union(centroidBounds, primitiveInfo[i].centroid);
         int dim = centroidBounds.MaximumExtent();
 
         // Partition primitives into two sets and build children
-        int mid = (start + end) / 2;
+        size_t mid = (start + end) / 2;
         if (centroidBounds.pMax[dim] == centroidBounds.pMin[dim]) {
             // Create leaf _BVHBuildNode_
-            int firstPrimOffset = orderedPrims.size();
-            for (int i = start; i < end; ++i) {
-                int primNum = primitiveInfo[i].primitiveNumber;
+            size_t firstPrimOffset = orderedPrims.size();
+            for (size_t i = start; i < end; ++i) {
+                size_t primNum = primitiveInfo[i].primitiveNumber;
                 orderedPrims.push_back(primitives[primNum]);
             }
             node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
@@ -318,7 +320,7 @@ BVHBuildNode *BVHAccel::recursiveBuild(
                     BucketInfo buckets[nBuckets];
 
                     // Initialize _BucketInfo_ for SAH partition buckets
-                    for (int i = start; i < end; ++i) {
+                    for (size_t i = start; i < end; ++i) {
                         int b = nBuckets *
                                 centroidBounds.Offset(
                                     primitiveInfo[i].centroid)[dim];
@@ -376,9 +378,9 @@ BVHBuildNode *BVHAccel::recursiveBuild(
                         mid = pmid - &primitiveInfo[0];
                     } else {
                         // Create leaf _BVHBuildNode_
-                        int firstPrimOffset = orderedPrims.size();
-                        for (int i = start; i < end; ++i) {
-                            int primNum = primitiveInfo[i].primitiveNumber;
+                        size_t firstPrimOffset = orderedPrims.size();
+                        for (size_t i = start; i < end; ++i) {
+                            size_t primNum = primitiveInfo[i].primitiveNumber;
                             orderedPrims.push_back(primitives[primNum]);
                         }
                         node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
@@ -482,7 +484,7 @@ BVHBuildNode *BVHAccel::emitLBVH(
         Bounds3f bounds;
         int firstPrimOffset = orderedPrimsOffset->fetch_add(nPrimitives);
         for (int i = 0; i < nPrimitives; ++i) {
-            int primitiveIndex = mortonPrims[i].primitiveIndex;
+            size_t primitiveIndex = mortonPrims[i].primitiveIndex;
             orderedPrims[firstPrimOffset + i] = primitives[primitiveIndex];
             bounds = Union(bounds, primitiveInfo[primitiveIndex].bounds);
         }
@@ -534,22 +536,22 @@ BVHBuildNode *BVHAccel::emitLBVH(
 
 BVHBuildNode *BVHAccel::buildUpperSAH(MemoryArena &arena,
                                       std::vector<BVHBuildNode *> &treeletRoots,
-                                      int start, int end,
+                                      size_t start, size_t end,
                                       int *totalNodes) const {
     CHECK_LT(start, end);
-    int nNodes = end - start;
+    size_t nNodes = end - start;
     if (nNodes == 1) return treeletRoots[start];
     (*totalNodes)++;
     BVHBuildNode *node = arena.Alloc<BVHBuildNode>();
 
     // Compute bounds of all nodes under this HLBVH node
     Bounds3f bounds;
-    for (int i = start; i < end; ++i)
+    for (size_t i = start; i < end; ++i)
         bounds = Union(bounds, treeletRoots[i]->bounds);
 
     // Compute bound of HLBVH node centroids, choose split dimension _dim_
     Bounds3f centroidBounds;
-    for (int i = start; i < end; ++i) {
+    for (size_t i = start; i < end; ++i) {
         Point3f centroid =
             (treeletRoots[i]->bounds.pMin + treeletRoots[i]->bounds.pMax) *
             0.5f;
@@ -569,7 +571,7 @@ BVHBuildNode *BVHAccel::buildUpperSAH(MemoryArena &arena,
     BucketInfo buckets[nBuckets];
 
     // Initialize _BucketInfo_ for HLBVH SAH partition buckets
-    for (int i = start; i < end; ++i) {
+    for (size_t i = start; i < end; ++i) {
         Float centroid = (treeletRoots[i]->bounds.pMin[dim] +
                           treeletRoots[i]->bounds.pMax[dim]) *
                          0.5f;
@@ -641,8 +643,8 @@ int BVHAccel::flattenBVHTree(BVHBuildNode *node, int *offset) {
     if (node->nPrimitives > 0) {
         CHECK(!node->children[0] && !node->children[1]);
         CHECK_LT(node->nPrimitives, 65536);
-        linearNode->primitivesOffset = node->firstPrimOffset;
-        linearNode->nPrimitives = node->nPrimitives;
+        linearNode->primitivesOffset = static_cast<int32_t>(node->firstPrimOffset);
+        linearNode->nPrimitives = static_cast<uint16_t>(node->nPrimitives);
     } else {
         // Create interior flattened BVH node
         linearNode->axis = node->splitAxis;
