@@ -67,7 +67,7 @@ struct Distribution1D {
             for (int i = 1; i < n + 1; ++i) cdf[i] /= funcInt;
         }
     }
-    int Count() const { return func.size(); }
+    size_t Count() const { return func.size(); }
     Float SampleContinuous(Float u, Float *pdf, int *off = nullptr) const {
         // Find surrounding CDF segments and _offset_
         int offset = FindInterval(cdf.size(),
