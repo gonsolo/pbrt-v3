@@ -570,8 +570,8 @@ Interaction Triangle::Sample(const Point2f &u, Float *pdf) const {
 Float Triangle::SolidAngle(const Point3f &p, int nSamples) const {
     // Project the vertices into the unit sphere around p.
     std::array<Vector3f, 3> pSphere = {
-        Normalize(mesh->p[v[0]] - p), Normalize(mesh->p[v[1]] - p),
-        Normalize(mesh->p[v[2]] - p)
+        {Normalize(mesh->p[v[0]] - p), Normalize(mesh->p[v[1]] - p),
+            Normalize(mesh->p[v[2]] - p)}
     };
 
     // http://math.stackexchange.com/questions/9819/area-of-a-spherical-triangle

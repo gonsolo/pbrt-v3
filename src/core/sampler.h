@@ -117,10 +117,10 @@ class GlobalSampler : public Sampler {
 
   private:
     // GlobalSampler Private Data
-    int dimension;
+    size_t dimension;
     int64_t intervalSampleIndex;
-    static const int arrayStartDim = 5;
-    int arrayEndDim;
+    static const size_t arrayStartDim = 5;
+    size_t arrayEndDim;
 };
 
 }  // namespace pbrt

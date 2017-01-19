@@ -240,8 +240,9 @@ TEST(Triangle, Sampling) {
         for (int j = 0; j < count; ++j) {
             Point2f u{RadicalInverse(0, j), RadicalInverse(1, j)};
             Float pdf;
-            Interaction pTri = tri->Sample(ref, u, &pdf);
-            Vector3f wi = Normalize(pTri.p - pc);
+            tri->Sample(ref, u, &pdf);
+//            Interaction pTri = tri->Sample(ref, u, &pdf);
+//            Vector3f wi = Normalize(pTri.p - pc);
             EXPECT_GT(pdf, 0);
             triSampleEstimate += 1. / (count * pdf);
         }
@@ -295,7 +296,7 @@ TEST(Triangle, SolidAngle) {
         for (int j = 0; j < count; ++j) {
             Point2f u{RadicalInverse(0, j), RadicalInverse(1, j)};
             Float pdf;
-            Interaction pTri = tri->Sample(ref, u, &pdf);
+            tri->Sample(ref, u, &pdf);
             EXPECT_GT(pdf, 0);
             triSampleEstimate += 1. / (count * pdf);
         }
