@@ -61,16 +61,16 @@ class KdTreeAccel : public Aggregate {
   private:
     // KdTreeAccel Private Methods
     void buildTree(int nodeNum, const Bounds3f &bounds,
-                   const std::vector<Bounds3f> &primBounds, int *primNums,
-                   int nprims, int depth,
-                   const std::unique_ptr<BoundEdge[]> edges[3], int *prims0,
-                   int *prims1, int badRefines = 0);
+                   const std::vector<Bounds3f> &primBounds, size_t *primNums,
+                   size_t nprims, int depth,
+                   const std::unique_ptr<BoundEdge[]> edges[3], size_t *prims0,
+                   size_t *prims1, int badRefines = 0);
 
     // KdTreeAccel Private Data
     const int isectCost, traversalCost, maxPrims;
     const Float emptyBonus;
     std::vector<std::shared_ptr<Primitive>> primitives;
-    std::vector<int> primitiveIndices;
+    std::vector<size_t> primitiveIndices;
     KdAccelNode *nodes;
     int nAllocedNodes, nextFreeNode;
     Bounds3f bounds;

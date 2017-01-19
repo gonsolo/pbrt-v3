@@ -43,7 +43,7 @@ namespace pbrt {
 // KdTreeAccel Local Declarations
 struct KdAccelNode {
     // KdAccelNode Methods
-    void InitLeaf(int *primNums, int np, std::vector<int> *primitiveIndices);
+    void InitLeaf(size_t *primNums, size_t np, std::vector<size_t> *primitiveIndices);
     void InitInterior(int axis, int ac, Float s) {
         split = s;
         flags = axis;
@@ -56,8 +56,8 @@ struct KdAccelNode {
     int AboveChild() const { return aboveChild >> 2; }
     union {
         Float split;                 // Interior
-        int onePrimitive;            // Leaf
-        int primitiveIndicesOffset;  // Leaf
+        int32_t onePrimitive;            // Leaf
+        int32_t primitiveIndicesOffset;  // Leaf
     };
 
   private:
@@ -72,11 +72,11 @@ enum class EdgeType { Start, End };
 struct BoundEdge {
     // BoundEdge Public Methods
     BoundEdge() {}
-    BoundEdge(Float t, int primNum, bool starting) : t(t), primNum(primNum) {
+    BoundEdge(Float t, size_t primNum, bool starting) : t(t), primNum(primNum) {
         type = starting ? EdgeType::Start : EdgeType::End;
     }
     Float t;
-    int primNum;
+    size_t primNum;
     EdgeType type;
 };
 
@@ -108,11 +108,11 @@ KdTreeAccel::KdTreeAccel(const std::vector<std::shared_ptr<Primitive>> &p,
     std::unique_ptr<BoundEdge[]> edges[3];
     for (int i = 0; i < 3; ++i)
         edges[i].reset(new BoundEdge[2 * primitives.size()]);
-    std::unique_ptr<int[]> prims0(new int[primitives.size()]);
-    std::unique_ptr<int[]> prims1(new int[(maxDepth + 1) * primitives.size()]);
+    std::unique_ptr<size_t[]> prims0(new size_t[primitives.size()]);
+    std::unique_ptr<size_t[]> prims1(new size_t[(maxDepth + 1) * primitives.size()]);
 
     // Initialize _primNums_ for kd-tree construction
-    std::unique_ptr<int[]> primNums(new int[primitives.size()]);
+    std::unique_ptr<size_t[]> primNums(new size_t[primitives.size()]);
     for (size_t i = 0; i < primitives.size(); ++i) primNums[i] = i;
 
     // Start recursive construction of kd-tree
@@ -120,17 +120,17 @@ KdTreeAccel::KdTreeAccel(const std::vector<std::shared_ptr<Primitive>> &p,
               maxDepth, edges, prims0.get(), prims1.get());
 }
 
-void KdAccelNode::InitLeaf(int *primNums, int np,
-                           std::vector<int> *primitiveIndices) {
+void KdAccelNode::InitLeaf(size_t *primNums, size_t np,
+                           std::vector<size_t> *primitiveIndices) {
     flags = 3;
     nPrims |= (np << 2);
     // Store primitive ids for leaf node
     if (np == 0)
         onePrimitive = 0;
     else if (np == 1)
-        onePrimitive = primNums[0];
+        onePrimitive = static_cast<int32_t>(primNums[0]);
     else {
-        primitiveIndicesOffset = primitiveIndices->size();
+        primitiveIndicesOffset = static_cast<int32_t>(primitiveIndices->size());
         for (int i = 0; i < np; ++i) primitiveIndices->push_back(primNums[i]);
     }
 }
@@ -139,9 +139,9 @@ KdTreeAccel::~KdTreeAccel() { FreeAligned(nodes); }
 
 void KdTreeAccel::buildTree(int nodeNum, const Bounds3f &nodeBounds,
                             const std::vector<Bounds3f> &allPrimBounds,
-                            int *primNums, int nPrimitives, int depth,
+                            size_t *primNums, size_t nPrimitives, int depth,
                             const std::unique_ptr<BoundEdge[]> edges[3],
-                            int *prims0, int *prims1, int badRefines) {
+                            size_t *prims0, size_t *prims1, int badRefines) {
     CHECK_EQ(nodeNum, nextFreeNode);
     // Get next free node from _nodes_ array
     if (nextFreeNode == nAllocedNodes) {
@@ -179,7 +179,7 @@ retrySplit:
 
     // Initialize edges for _axis_
     for (int i = 0; i < nPrimitives; ++i) {
-        int pn = primNums[i];
+        size_t pn = primNums[i];
         const Bounds3f &bounds = allPrimBounds[pn];
         edges[axis][2 * i] = BoundEdge(bounds.pMin[axis], pn, true);
         edges[axis][2 * i + 1] = BoundEdge(bounds.pMax[axis], pn, false);
@@ -195,7 +195,7 @@ retrySplit:
               });
 
     // Compute cost of all splits for _axis_ to find best
-    int nBelow = 0, nAbove = nPrimitives;
+    size_t nBelow = 0, nAbove = nPrimitives;
     for (int i = 0; i < 2 * nPrimitives; ++i) {
         if (edges[axis][i].type == EdgeType::End) --nAbove;
         Float edgeT = edges[axis][i].t;
@@ -326,7 +326,7 @@ bool KdTreeAccel::Intersect(const Ray &ray, SurfaceInteraction *isect) const {
                 if (p->Intersect(ray, isect)) hit = true;
             } else {
                 for (int i = 0; i < nPrimitives; ++i) {
-                    int index =
+                    size_t index =
                         primitiveIndices[node->primitiveIndicesOffset + i];
                     const std::shared_ptr<Primitive> &p = primitives[index];
                     // Check one primitive inside leaf node
@@ -373,7 +373,7 @@ bool KdTreeAccel::IntersectP(const Ray &ray) const {
                 }
             } else {
                 for (int i = 0; i < nPrimitives; ++i) {
-                    int primitiveIndex =
+                    size_t primitiveIndex =
                         primitiveIndices[node->primitiveIndicesOffset + i];
                     const std::shared_ptr<Primitive> &prim =
                         primitives[primitiveIndex];
