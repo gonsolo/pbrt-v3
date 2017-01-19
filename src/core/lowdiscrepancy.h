@@ -58,9 +58,9 @@ inline void Sobol2D(int nSamplesPerPixelSample, int nPixelSamples,
 extern uint32_t CMaxMinDist[17][32];
 inline uint64_t SobolIntervalToIndex(const uint32_t log2Resolution,
                                      uint64_t sampleNum, const Point2i &p);
-inline float SobolSampleFloat(int64_t index, int dimension,
+inline float SobolSampleFloat(int64_t index, size_t dimension,
                               uint32_t scramble = 0);
-inline double SobolSampleDouble(int64_t index, int dimension,
+inline double SobolSampleDouble(int64_t index, size_t dimension,
                                 uint64_t scramble = 0);
 
 // Low Discrepancy Inline Functions
@@ -248,7 +248,7 @@ inline uint64_t SobolIntervalToIndex(const uint32_t m, uint64_t frame,
     return index;
 }
 
-inline Float SobolSample(int64_t index, int dimension, uint64_t scramble = 0) {
+inline Float SobolSample(int64_t index, size_t dimension, uint64_t scramble = 0) {
 #ifdef PBRT_FLOAT_AS_DOUBLE
     return SobolSampleDouble(index, dimension, scramble);
 #else
@@ -256,13 +256,13 @@ inline Float SobolSample(int64_t index, int dimension, uint64_t scramble = 0) {
 #endif
 }
 
-inline float SobolSampleFloat(int64_t a, int dimension, uint32_t scramble) {
+inline float SobolSampleFloat(int64_t a, size_t dimension, uint32_t scramble) {
     CHECK_LT(dimension, NumSobolDimensions) <<
         "Integrator has consumed too many Sobol' dimensions; you "
         "may want to use a Sampler without a dimension limit like "
         "\"02sequence.\"";
     uint32_t v = scramble;
-    for (int i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
+    for (size_t i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
         if (a & 1) v ^= SobolMatrices32[i];
 #ifndef PBRT_HAVE_HEX_FP_CONSTANTS
     return std::min(v * 2.3283064365386963e-10f /* 1/2^32 */,
@@ -273,13 +273,13 @@ inline float SobolSampleFloat(int64_t a, int dimension, uint32_t scramble) {
 #endif
 }
 
-inline double SobolSampleDouble(int64_t a, int dimension, uint64_t scramble) {
+inline double SobolSampleDouble(int64_t a, size_t dimension, uint64_t scramble) {
   CHECK_LT(dimension, NumSobolDimensions) <<
       "Integrator has consumed too many Sobol' dimensions; you "
       "may want to use a Sampler without a dimension limit like "
       "\"02sequence\".";
     uint64_t result = scramble & ~ - (1LL << SobolMatrixSize);
-    for (int i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
+    for (auto i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
         if (a & 1) result ^= SobolMatrices64[i];
     return std::min(result * (1.0 / (1ULL << SobolMatrixSize)),
                     DoubleOneMinusEpsilon);

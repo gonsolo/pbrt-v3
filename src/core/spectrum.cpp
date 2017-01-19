@@ -1250,7 +1250,7 @@ void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
         // Otherwise, find indices into the input SPD that bracket the
         // wavelength range [lambda-delta, lambda+delta]. Note that this is
         // a 2x wider range than we will actually filter over in the end.
-        int start, end;
+        size_t start, end;
         if (lambda - delta < lambdaIn[0])
             // Virtual sample at the start, as described above.
             start = -1;

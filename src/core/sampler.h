@@ -113,7 +113,7 @@ class GlobalSampler : public Sampler {
     Point2f Get2D();
     GlobalSampler(int64_t samplesPerPixel) : Sampler(samplesPerPixel) {}
     virtual int64_t GetIndexForSample(int64_t sampleNum) const = 0;
-    virtual Float SampleDimension(int64_t index, int dimension) const = 0;
+    virtual Float SampleDimension(int64_t index, size_t dimension) const = 0;
 
   private:
     // GlobalSampler Private Data

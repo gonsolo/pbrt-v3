@@ -61,7 +61,7 @@ class SobolSampler : public GlobalSampler {
         CHECK_EQ(1 << log2Resolution, resolution);
     }
     int64_t GetIndexForSample(int64_t sampleNum) const;
-    Float SampleDimension(int64_t index, int dimension) const;
+    Float SampleDimension(int64_t index, size_t dimension) const;
 
   private:
     // SobolSampler Private Data

@@ -44,7 +44,7 @@ int64_t SobolSampler::GetIndexForSample(int64_t sampleNum) const {
                                 Point2i(currentPixel - sampleBounds.pMin));
 }
 
-Float SobolSampler::SampleDimension(int64_t index, int dim) const {
+Float SobolSampler::SampleDimension(int64_t index, size_t dim) const {
     if (dim >= NumSobolDimensions)
         LOG(FATAL) << StringPrintf("SobolSampler can only sample up to %d "
                                    "dimensions! Exiting.",

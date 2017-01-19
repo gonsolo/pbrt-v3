@@ -89,7 +89,7 @@ Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene,
     // Randomly choose a single light to sample, _light_
     int nLights = int(scene.lights.size());
     if (nLights == 0) return Spectrum(0.f);
-    int lightNum;
+    size_t lightNum;
     Float lightPdf;
     if (lightDistrib) {
         lightNum = lightDistrib->SampleDiscrete(sampler.Get1D(), &lightPdf);

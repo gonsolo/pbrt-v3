@@ -115,7 +115,7 @@ int64_t HaltonSampler::GetIndexForSample(int64_t sampleNum) const {
     return offsetForCurrentPixel + sampleNum * sampleStride;
 }
 
-Float HaltonSampler::SampleDimension(int64_t index, int dim) const {
+Float HaltonSampler::SampleDimension(int64_t index, size_t dim) const {
     if (sampleAtPixelCenter && (dim == 0 || dim == 1)) return 0.5f;
     if (dim == 0)
         return RadicalInverse(dim, index >> baseExponents[0]);

@@ -384,7 +384,7 @@ static std::vector<std::shared_ptr<Shape>> LoopSubdivide(
         std::unique_ptr<int[]> verts(new int[3 * ntris]);
         int *vp = verts.get();
         size_t totVerts = v.size();
-        std::map<SDVertex *, int> usedVerts;
+        std::map<SDVertex *, size_t> usedVerts;
         for (size_t i = 0; i < totVerts; ++i) usedVerts[v[i]] = i;
         for (size_t i = 0; i < ntris; ++i) {
             for (int j = 0; j < 3; ++j) {

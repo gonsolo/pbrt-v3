@@ -54,7 +54,7 @@ void StratifiedSample2D(Point2f *samples, int nx, int ny, RNG &rng,
 void LatinHypercube(Float *samples, int nSamples, int nDim, RNG &rng);
 struct Distribution1D {
     // Distribution1D Public Methods
-    Distribution1D(const Float *f, int n) : func(f, f + n), cdf(n + 1) {
+    Distribution1D(const Float *f, size_t n) : func(f, f + n), cdf(n + 1) {
         // Compute integral of step function at $x_i$
         cdf[0] = 0;
         for (int i = 1; i < n + 1; ++i) cdf[i] = cdf[i - 1] + func[i - 1] / n;
@@ -98,7 +98,7 @@ struct Distribution1D {
         if (uRemapped) CHECK(*uRemapped >= 0.f && *uRemapped <= 1.f);
         return offset;
     }
-    Float DiscretePDF(int index) const {
+    Float DiscretePDF(size_t index) const {
         CHECK(index >= 0 && index < Count());
         return func[index] / (funcInt * Count());
     }
