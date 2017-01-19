@@ -63,7 +63,6 @@
 #include <glog/logging.h>
 
 // Platform-specific definitions
-#include <stdint.h>
 #if defined(PBRT_IS_MSVC)
 #include <float.h>
 #include <intrin.h>
@@ -74,6 +73,7 @@
 #pragma warning(disable : 4005) // macro redefinition in Windows system files
 #endif
 #endif
+#include <stdint.h>
 
 // Global Macros
 #define ALLOCA(TYPE, COUNT) (TYPE *) alloca((COUNT) * sizeof(TYPE))
