@@ -70,6 +70,9 @@
 #pragma warning(disable : 4305)  // double constant assigned to float
 #pragma warning(disable : 4244)  // int -> float conversion
 #pragma warning(disable : 4843)  // double -> float conversion
+#if defined(PBRT_IS_MSVC2015)
+#pragma warning(disable : 4005) // macro redefinition in Windows system files
+#endif
 #endif
 
 // Global Macros
