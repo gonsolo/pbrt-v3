@@ -117,7 +117,7 @@ TEST(Triangle, Watertight) {
         EXPECT_GE(nHits, 1);
 
         // Now tougher: shoot directly at a vertex.
-        Point3f pVertex = vertices[rng.UniformUInt32(vertices.size())];
+        Point3f pVertex = vertices[rng.UniformUInt32(static_cast<uint32_t>(vertices.size()))];
         r.d = pVertex - r.o;
         nHits = 0;
         for (const auto &tri : tris) {

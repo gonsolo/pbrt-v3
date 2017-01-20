@@ -231,9 +231,9 @@ int assemble(int argc, char *argv[]) {
             // first image's.
             if (dspw != displayWindow) {
                 fprintf(stderr,
-                        "%s: displayWindow (%d,%d) - (%d,%d) in EXR file "
+                        "%s: displayWindow (%" PRId64 ",%" PRId64 ") - (%" PRId64 ",%" PRId64 ") in EXR file "
                         "doesn't match the displayWindow of first EXR file "
-                        "(%d,%d) - (%d,%d). "
+                        "(%" PRId64 ",%" PRId64 ") - (%" PRId64 ",%" PRId64 "). "
                         "Ignoring this file.\n",
                         file, dspw.pMin.x, dspw.pMin.y, dspw.pMax.x,
                         dspw.pMax.y, displayWindow.pMin.x, displayWindow.pMin.y,
@@ -242,9 +242,9 @@ int assemble(int argc, char *argv[]) {
             }
             if (Union(dataWindow, displayWindow) != displayWindow) {
                 fprintf(stderr,
-                        "%s: dataWindow (%d,%d) - (%d,%d) in EXR file isn't "
-                        "inside the displayWindow of first EXR file (%d,%d) - "
-                        "(%d,%d). "
+                        "%s: dataWindow (%" PRId64 ",%" PRId64 ") - (%" PRId64 ",%" PRId64 ") in EXR file isn't "
+                        "inside the displayWindow of first EXR file (%" PRId64 ",%" PRId64 ") - "
+                        "(%" PRId64 ",%" PRId64 "). "
                         "Ignoring this file.\n",
                         file, dataWindow.pMin.x, dataWindow.pMin.y,
                         dataWindow.pMax.x, dataWindow.pMax.y,
@@ -313,7 +313,7 @@ int cat(int argc, char *argv[]) {
             for (const auto &v : sorted) {
                 Float rgb[3];
                 v.second.ToRGB(rgb);
-                printf("(%d, %d): (%.9g %.9g %.9g)\n", v.first / res.x,
+                printf("(%" PRId64 ", %" PRId64 "): (%.9g %.9g %.9g)\n", v.first / res.x,
                        v.first % res.x, rgb[0], rgb[1], rgb[2]);
             }
         } else {
@@ -379,8 +379,8 @@ int diff(int argc, char *argv[]) {
     }
     if (res[0] != res[1]) {
         fprintf(stderr,
-                "imgtool: image resolutions don't match \"%s\": (%d, %d) "
-                "\"%s\": (%d, %d)\n",
+                "imgtool: image resolutions don't match \"%s\": (%" PRId64 ", %" PRId64 ") "
+                "\"%s\": (%" PRId64 ", %" PRId64 ")\n",
                 filename[0], res[0].x, res[0].y, filename[1], res[1].x,
                 res[1].y);
         return 1;
@@ -451,7 +451,7 @@ int info(int argc, char *argv[]) {
             continue;
         }
 
-        printf("%s: resolution %d, %d\n", argv[i], res.x, res.y);
+        printf("%s: resolution %" PRId64 ", %" PRId64 "\n", argv[i], res.x, res.y);
         Float min[3] = {Infinity, Infinity, Infinity};
         Float max[3] = {-Infinity, -Infinity, -Infinity};
         double sum[3] = {0., 0., 0.};

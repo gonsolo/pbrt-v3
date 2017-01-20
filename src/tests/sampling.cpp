@@ -217,11 +217,11 @@ TEST(MaxMinDist, MinDist) {
 
         // Expected minimum distances from Gruenschloss et al.'s paper.
         Float expectedMinDist[17] = {
-            0., /* not checked */
-            0., /* not checked */
-            0.35355, 0.35355, 0.22534, 0.16829, 0.11267,
-            0.07812, 0.05644, 0.03906, 0.02816, 0.01953,
-            0.01408, 0.00975, 0.00704, 0.00486, 0.00352,
+            0.f, /* not checked */
+            0.f, /* not checked */
+            0.35355f, 0.35355f, 0.22534f, 0.16829f, 0.11267f,
+            0.07812f, 0.05644f, 0.03906f, 0.02816f, 0.01953f,
+            0.01408f, 0.00975f, 0.00704f, 0.00486f, 0.00352f,
         };
         // Increase the tolerance by a small slop factor.
         EXPECT_GT(minDist, 0.99 * expectedMinDist[logSamples]);
@@ -267,14 +267,14 @@ TEST(Distribution1D, Discrete) {
     // We should get a stream of hits in the first interval, up until the
     // cross-over point at 0.25 (plus/minus fp slop).
     for (; u < uMax; u = NextFloatUp(u)) {
-        int interval = dist.SampleDiscrete(u);
+        size_t interval = dist.SampleDiscrete(u);
         if (interval == 3) break;
         EXPECT_EQ(1, interval);
     }
     EXPECT_LT(u, uMax);
     // And then all the rest should be in the third interval
     for (; u <= uMax; u = NextFloatUp(u)) {
-        int interval = dist.SampleDiscrete(u);
+        size_t interval = dist.SampleDiscrete(u);
         EXPECT_EQ(3, interval);
     }
 }

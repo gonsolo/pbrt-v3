@@ -110,7 +110,7 @@ inline Float SampleGeneratorMatrix(const uint32_t *C, uint32_t a,
 
 inline uint32_t GrayCode(uint32_t v) { return (v >> 1) ^ v; }
 
-inline void GrayCodeSample(const uint32_t *C, uint32_t n, uint32_t scramble,
+inline void GrayCodeSample(const uint32_t *C, size_t n, uint32_t scramble,
                            Float *p) {
     uint32_t v = scramble;
     for (uint32_t i = 0; i < n; ++i) {
