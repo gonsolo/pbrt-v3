@@ -56,6 +56,9 @@
 #ifndef TINY_OBJ_LOADER_H_
 #define TINY_OBJ_LOADER_H_
 
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <vector>
 #include <map>
@@ -210,7 +213,7 @@ private:
 bool LoadObj(std::vector<shape_t> &shapes,       // [output]
              std::vector<material_t> &materials, // [output]
              std::string &err,                   // [output]
-             const char *filename, const char *mtl_basepath = NULL,
+             const char *filename, const char *mtl_basepath = nullptr,
              unsigned int flags = 1 );
 
 /// Loads object from a std::istream, uses GetMtlIStreamFn to retrieve
@@ -1319,7 +1322,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    float bounds[2][3] = {{1e30, 1e30, 1e30}, {-1e30, -1e30, -1e30}};
+    float bounds[2][3] = {{1e30f, 1e30f, 1e30f}, {-1e30f, -1e30f, -1e30f}};
     for (size_t i = 0; i < shapes.size(); ++i) {
         const shape_t &shape = shapes[i];
         const mesh_t &mesh = shape.mesh;
@@ -1336,7 +1339,7 @@ int main(int argc, char *argv[]) {
 
     int numAreaLights = 0;
     int numTriangles = 0;
-    int numMeshes = shapes.size();
+    size_t numMeshes = shapes.size();
 
     // First, make named materials for all of the materials.
     for (const material_t &mtl : materials) {
@@ -1391,7 +1394,7 @@ int main(int argc, char *argv[]) {
                     mtl.name.c_str(), mtl.bump_texname.c_str());
         }
 
-        float roughness = (mtl.shininess == 0) ? 0. : (1.f / mtl.shininess);
+        float roughness = (mtl.shininess == 0) ? 0.f : (1.f / mtl.shininess);
         fprintf(f, "MakeNamedMaterial \"%s\" \"string type\" \"uber\" ",
                 mtl.name.c_str());
 
@@ -1514,7 +1517,7 @@ int main(int argc, char *argv[]) {
     }
     if (f != stdout) fclose(f);
 
-    fprintf(stderr, "Converted %d meshes (%d triangles, %d mesh emitters).\n",
+    fprintf(stderr, "Converted %zd meshes (%d triangles, %d mesh emitters).\n",
             numMeshes, numTriangles, numAreaLights);
 
     return 0;
