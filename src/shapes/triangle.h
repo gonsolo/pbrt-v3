@@ -111,10 +111,11 @@ class Triangle : public Shape {
 
 std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
     const Transform *o2w, const Transform *w2o, bool reverseOrientation,
-    int nTriangles, const Int *vertexIndices, int nVertices, const Point3f *p,
+    Int nTriangles, const Int *vertexIndices, Int nVertices, const Point3f *p,
     const Vector3f *s, const Normal3f *n, const Point2f *uv,
     const std::shared_ptr<Texture<Float>> &alphaTexture,
     const std::shared_ptr<Texture<Float>> &shadowAlphaTexture);
+
 std::vector<std::shared_ptr<Shape>> CreateTriangleMeshShape(
     const Transform *o2w, const Transform *w2o, bool reverseOrientation,
     const ParamSet &params,

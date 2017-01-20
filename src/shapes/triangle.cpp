@@ -88,10 +88,11 @@ TriangleMesh::TriangleMesh(
 
 std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
     const Transform *ObjectToWorld, const Transform *WorldToObject,
-    bool reverseOrientation, int nTriangles, const Int *vertexIndices,
-    int nVertices, const Point3f *p, const Vector3f *s, const Normal3f *n,
+    bool reverseOrientation, Int nTriangles, const Int *vertexIndices,
+    Int nVertices, const Point3f *p, const Vector3f *s, const Normal3f *n,
     const Point2f *uv, const std::shared_ptr<Texture<Float>> &alphaMask,
     const std::shared_ptr<Texture<Float>> &shadowAlphaMask) {
+
     std::shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>(
         *ObjectToWorld, nTriangles, vertexIndices, nVertices, p, s, n, uv,
         alphaMask, shadowAlphaMask);

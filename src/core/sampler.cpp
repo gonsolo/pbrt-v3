@@ -118,7 +118,7 @@ bool PixelSampler::SetSampleNumber(int64_t sampleNum) {
 Float PixelSampler::Get1D() {
     ProfilePhase _(Prof::GetSample);
     CHECK_LT(currentPixelSampleIndex, samplesPerPixel);
-    if (current1DDimension < samples1D.size())
+    if (current1DDimension < (Int)samples1D.size())
         return samples1D[current1DDimension++][currentPixelSampleIndex];
     else
         return rng.UniformFloat();
@@ -127,7 +127,7 @@ Float PixelSampler::Get1D() {
 Point2f PixelSampler::Get2D() {
     ProfilePhase _(Prof::GetSample);
     CHECK_LT(currentPixelSampleIndex, samplesPerPixel);
-    if (current2DDimension < samples2D.size())
+    if (current2DDimension < (Int)samples2D.size())
         return samples2D[current2DDimension++][currentPixelSampleIndex];
     else
         return Point2f(rng.UniformFloat(), rng.UniformFloat());
