@@ -319,7 +319,7 @@ typedef struct LodePNGColorMode
 {
   /*header (IHDR)*/
   LodePNGColorType colortype; /*color type, see PNG standard or documentation further in this header file*/
-  size_t bitdepth;  /*bits per sample, see PNG standard or documentation further in this header file*/
+  unsigned bitdepth;  /*bits per sample, see PNG standard or documentation further in this header file*/
 
   /*
   palette (PLTE and tRNS)

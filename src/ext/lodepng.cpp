@@ -2559,7 +2559,7 @@ static unsigned checkColorValidity(LodePNGColorType colortype, size_t bd) /*bd =
   return 0; /*allowed color type / bits combination*/
 }
 
-static size_t getNumColorChannels(LodePNGColorType colortype)
+static unsigned getNumColorChannels(LodePNGColorType colortype)
 {
   switch(colortype)
   {
@@ -2572,7 +2572,7 @@ static size_t getNumColorChannels(LodePNGColorType colortype)
   return 0; /*unexisting color type*/
 }
 
-static size_t lodepng_get_bpp_lct(LodePNGColorType colortype, size_t bitdepth)
+static unsigned lodepng_get_bpp_lct(LodePNGColorType colortype, unsigned bitdepth)
 {
   /*bits per pixel is amount of channels * bits per channel*/
   return getNumColorChannels(colortype) * bitdepth;
