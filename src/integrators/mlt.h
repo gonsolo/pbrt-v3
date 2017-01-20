@@ -53,8 +53,8 @@ namespace pbrt {
 class MLTSampler : public Sampler {
   public:
     // MLTSampler Public Methods
-    MLTSampler(int mutationsPerPixel, int rngSequenceIndex, Float sigma,
-               Float largeStepProbability, int streamCount)
+    MLTSampler(Int mutationsPerPixel, Int rngSequenceIndex, Float sigma,
+               Float largeStepProbability, Int streamCount)
         : Sampler(mutationsPerPixel),
           rng(rngSequenceIndex),
           sigma(sigma),
@@ -62,11 +62,11 @@ class MLTSampler : public Sampler {
           streamCount(streamCount) {}
     Float Get1D();
     Point2f Get2D();
-    std::unique_ptr<Sampler> Clone(int seed);
+    std::unique_ptr<Sampler> Clone(Int seed);
     void StartIteration();
     void Accept();
     void Reject();
-    void StartStream(int index);
+    void StartStream(Int index);
     int GetNextIndex() { return streamIndex + streamCount * sampleIndex++; }
 
   protected:
@@ -84,9 +84,9 @@ class MLTSampler : public Sampler {
         }
 
         // PrimarySample Public Data
-        int64_t lastModificationIteration = 0;
+        Int lastModificationIteration = 0;
         Float valueBackup = 0;
-        int64_t modifyBackup = 0;
+        Int modifyBackup = 0;
     };
 
     // MLTSampler Private Methods
@@ -95,12 +95,12 @@ class MLTSampler : public Sampler {
     // MLTSampler Private Data
     RNG rng;
     const Float sigma, largeStepProbability;
-    const int streamCount;
+    const Int streamCount;
     std::vector<PrimarySample> X;
-    int64_t currentIteration = 0;
+    Int currentIteration = 0;
     bool largeStep = true;
-    int64_t lastLargeStepIteration = 0;
-    int streamIndex, sampleIndex;
+    Int lastLargeStepIteration = 0;
+    Int streamIndex, sampleIndex;
 };
 
 // MLT Declarations

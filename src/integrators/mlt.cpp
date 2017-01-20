@@ -65,7 +65,7 @@ Float MLTSampler::Get1D() {
 
 Point2f MLTSampler::Get2D() { return {Get1D(), Get1D()}; }
 
-std::unique_ptr<Sampler> MLTSampler::Clone(int seed) {
+std::unique_ptr<Sampler> MLTSampler::Clone(Int seed) {
     LOG(FATAL) << "MLTSampler::Clone() is not implemented";
     return nullptr;
 }
@@ -116,7 +116,7 @@ void MLTSampler::Reject() {
     --currentIteration;
 }
 
-void MLTSampler::StartStream(int index) {
+void MLTSampler::StartStream(Int index) {
     CHECK_LT(index, streamCount);
     streamIndex = index;
     sampleIndex = 0;

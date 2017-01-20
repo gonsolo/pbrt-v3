@@ -463,7 +463,7 @@ class RGBSpectrum : public CoefficientSpectrum<3> {
         const Float YWeight[3] = {0.212671f, 0.715160f, 0.072169f};
         return YWeight[0] * c[0] + YWeight[1] * c[1] + YWeight[2] * c[2];
     }
-    static RGBSpectrum FromSampled(const Float *lambda, const Float *v, int n) {
+    static RGBSpectrum FromSampled(const Float *lambda, const Float *v, Int n) {
         // Sort samples if unordered, use sorted for returned spectrum
         if (!SpectrumSamplesSorted(lambda, v, n)) {
             std::vector<Float> slambda(&lambda[0], &lambda[n]);
@@ -506,8 +506,8 @@ inline SampledSpectrum Lerp(Float t, const SampledSpectrum &s1,
     return (1 - t) * s1 + t * s2;
 }
 
-void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
-                            Float lambdaMin, Float lambdaMax, int nOut,
+void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, Int nIn,
+                            Float lambdaMin, Float lambdaMax, Int nOut,
                             Float *vOut);
 
 }  // namespace pbrt

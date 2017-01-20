@@ -48,18 +48,18 @@ namespace pbrt {
 class StratifiedSampler : public PixelSampler {
   public:
     // StratifiedSampler Public Methods
-    StratifiedSampler(int xPixelSamples, int yPixelSamples, bool jitterSamples,
-                      int nSampledDimensions)
+    StratifiedSampler(Int xPixelSamples, Int yPixelSamples, bool jitterSamples,
+                      Int nSampledDimensions)
         : PixelSampler(xPixelSamples * yPixelSamples, nSampledDimensions),
           xPixelSamples(xPixelSamples),
           yPixelSamples(yPixelSamples),
           jitterSamples(jitterSamples) {}
     void StartPixel(const Point2i &);
-    std::unique_ptr<Sampler> Clone(int seed);
+    std::unique_ptr<Sampler> Clone(Int seed);
 
   private:
     // StratifiedSampler Private Data
-    const int xPixelSamples, yPixelSamples;
+    const Int xPixelSamples, yPixelSamples;
     const bool jitterSamples;
 };
 

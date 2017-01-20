@@ -40,8 +40,8 @@
 namespace pbrt {
 
 // ZeroTwoSequenceSampler Method Definitions
-ZeroTwoSequenceSampler::ZeroTwoSequenceSampler(int64_t samplesPerPixel,
-                                               int nSampledDimensions)
+ZeroTwoSequenceSampler::ZeroTwoSequenceSampler(Int samplesPerPixel,
+                                               Int nSampledDimensions)
     : PixelSampler(RoundUpPow2(samplesPerPixel), nSampledDimensions) {
     if (!IsPowerOf2(samplesPerPixel))
         Warning(
@@ -68,7 +68,7 @@ void ZeroTwoSequenceSampler::StartPixel(const Point2i &p) {
     PixelSampler::StartPixel(p);
 }
 
-std::unique_ptr<Sampler> ZeroTwoSequenceSampler::Clone(int seed) {
+std::unique_ptr<Sampler> ZeroTwoSequenceSampler::Clone(Int seed) {
     ZeroTwoSequenceSampler *lds = new ZeroTwoSequenceSampler(*this);
     lds->rng.SetSequence(seed);
     return std::unique_ptr<Sampler>(lds);

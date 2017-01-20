@@ -62,7 +62,7 @@ static void extendedGCD(uint64_t a, uint64_t b, int64_t *x, int64_t *y) {
 }
 
 // HaltonSampler Method Definitions
-HaltonSampler::HaltonSampler(int samplesPerPixel, const Bounds2i &sampleBounds,
+HaltonSampler::HaltonSampler(Int samplesPerPixel, const Bounds2i &sampleBounds,
                              bool sampleAtPixelCenter)
     : GlobalSampler(samplesPerPixel), sampleAtPixelCenter(sampleAtPixelCenter) {
     // Generate random digit permutations for Halton sampler
@@ -115,7 +115,7 @@ int64_t HaltonSampler::GetIndexForSample(int64_t sampleNum) const {
     return offsetForCurrentPixel + sampleNum * sampleStride;
 }
 
-Float HaltonSampler::SampleDimension(int64_t index, size_t dim) const {
+Float HaltonSampler::SampleDimension(Int index, Int dim) const {
     if (sampleAtPixelCenter && (dim == 0 || dim == 1)) return 0.5f;
     if (dim == 0)
         return RadicalInverse(dim, index >> baseExponents[0]);
@@ -126,13 +126,13 @@ Float HaltonSampler::SampleDimension(int64_t index, size_t dim) const {
                                        PermutationForDimension(dim));
 }
 
-std::unique_ptr<Sampler> HaltonSampler::Clone(int seed) {
+std::unique_ptr<Sampler> HaltonSampler::Clone(Int seed) {
     return std::unique_ptr<Sampler>(new HaltonSampler(*this));
 }
 
 HaltonSampler *CreateHaltonSampler(const ParamSet &params,
                                    const Bounds2i &sampleBounds) {
-    int nsamp = params.FindOneInt("pixelsamples", 16);
+    Int nsamp = params.FindOneInt("pixelsamples", 16);
     if (PbrtOptions.quickRender) nsamp = 1;
     bool sampleAtCenter = params.FindOneBool("samplepixelcenter", false);
     return new HaltonSampler(nsamp, sampleBounds, sampleAtCenter);

@@ -47,8 +47,8 @@ namespace pbrt {
 class SobolSampler : public GlobalSampler {
   public:
     // SobolSampler Public Methods
-    std::unique_ptr<Sampler> Clone(int seed);
-    SobolSampler(int64_t samplesPerPixel, const Bounds2i &sampleBounds)
+    std::unique_ptr<Sampler> Clone(Int seed);
+    SobolSampler(Int samplesPerPixel, const Bounds2i &sampleBounds)
         : GlobalSampler(RoundUpPow2(samplesPerPixel)),
           sampleBounds(sampleBounds) {
         if (!IsPowerOf2(samplesPerPixel))
@@ -60,13 +60,13 @@ class SobolSampler : public GlobalSampler {
         log2Resolution = Log2Int(resolution);
         CHECK_EQ(1 << log2Resolution, resolution);
     }
-    int64_t GetIndexForSample(int64_t sampleNum) const;
-    Float SampleDimension(int64_t index, size_t dimension) const;
+    Int GetIndexForSample(Int sampleNum) const;
+    Float SampleDimension(Int index, Int dimension) const;
 
   private:
     // SobolSampler Private Data
     const Bounds2i sampleBounds;
-    int resolution, log2Resolution;
+    Int resolution, log2Resolution;
 };
 
 SobolSampler *CreateSobolSampler(const ParamSet &params,

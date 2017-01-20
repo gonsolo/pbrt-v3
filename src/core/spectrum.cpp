@@ -181,7 +181,7 @@ Float InterpolateSpectrumSamples(const Float *lambda, const Float *vals, int n,
     for (int i = 0; i < n - 1; ++i) CHECK_GT(lambda[i + 1], lambda[i]);
     if (l <= lambda[0]) return vals[0];
     if (l >= lambda[n - 1]) return vals[n - 1];
-    int offset = FindInterval(n, [&](int index) { return lambda[index] <= l; });
+    Int offset = FindInterval(n, [&](Int index) { return lambda[index] <= l; });
     CHECK(l >= lambda[offset] && l <= lambda[offset + 1]);
     Float t = (l - lambda[offset]) / (lambda[offset + 1] - lambda[offset]);
     return Lerp(t, vals[offset], vals[offset + 1]);
@@ -982,38 +982,38 @@ SampledSpectrum SampledSpectrum::rgbIllum2SpectRed;
 SampledSpectrum SampledSpectrum::rgbIllum2SpectGreen;
 SampledSpectrum SampledSpectrum::rgbIllum2SpectBlue;
 const Float RGB2SpectLambda[nRGB2SpectSamples] = {
-    380.000000, 390.967743, 401.935486, 412.903229, 423.870972, 434.838715,
-    445.806458, 456.774200, 467.741943, 478.709686, 489.677429, 500.645172,
-    511.612915, 522.580627, 533.548340, 544.516052, 555.483765, 566.451477,
-    577.419189, 588.386902, 599.354614, 610.322327, 621.290039, 632.257751,
-    643.225464, 654.193176, 665.160889, 676.128601, 687.096313, 698.064026,
-    709.031738, 720.000000};
+    380.000000f, 390.967743f, 401.935486f, 412.903229f, 423.870972f, 434.838715f,
+    445.806458f, 456.774200f, 467.741943f, 478.709686f, 489.677429f, 500.645172f,
+    511.612915f, 522.580627f, 533.548340f, 544.516052f, 555.483765f, 566.451477f,
+    577.419189f, 588.386902f, 599.354614f, 610.322327f, 621.290039f, 632.257751f,
+    643.225464f, 654.193176f, 665.160889f, 676.128601f, 687.096313f, 698.064026f,
+    709.031738f, 720.000000f};
 
 const Float RGBRefl2SpectWhite[nRGB2SpectSamples] = {
-    1.0618958571272863e+00, 1.0615019980348779e+00, 1.0614335379927147e+00,
-    1.0622711654692485e+00, 1.0622036218416742e+00, 1.0625059965187085e+00,
-    1.0623938486985884e+00, 1.0624706448043137e+00, 1.0625048144827762e+00,
-    1.0624366131308856e+00, 1.0620694238892607e+00, 1.0613167586932164e+00,
-    1.0610334029377020e+00, 1.0613868564828413e+00, 1.0614215366116762e+00,
-    1.0620336151299086e+00, 1.0625497454805051e+00, 1.0624317487992085e+00,
-    1.0625249140554480e+00, 1.0624277664486914e+00, 1.0624749854090769e+00,
-    1.0625538581025402e+00, 1.0625326910104864e+00, 1.0623922312225325e+00,
-    1.0623650980354129e+00, 1.0625256476715284e+00, 1.0612277619533155e+00,
-    1.0594262608698046e+00, 1.0599810758292072e+00, 1.0602547314449409e+00,
-    1.0601263046243634e+00, 1.0606565756823634e+00};
+    1.0618958571272863e+00f, 1.0615019980348779e+00f, 1.0614335379927147e+00f,
+    1.0622711654692485e+00f, 1.0622036218416742e+00f, 1.0625059965187085e+00f,
+    1.0623938486985884e+00f, 1.0624706448043137e+00f, 1.0625048144827762e+00f,
+    1.0624366131308856e+00f, 1.0620694238892607e+00f, 1.0613167586932164e+00f,
+    1.0610334029377020e+00f, 1.0613868564828413e+00f, 1.0614215366116762e+00f,
+    1.0620336151299086e+00f, 1.0625497454805051e+00f, 1.0624317487992085e+00f,
+    1.0625249140554480e+00f, 1.0624277664486914e+00f, 1.0624749854090769e+00f,
+    1.0625538581025402e+00f, 1.0625326910104864e+00f, 1.0623922312225325e+00f,
+    1.0623650980354129e+00f, 1.0625256476715284e+00f, 1.0612277619533155e+00f,
+    1.0594262608698046e+00f, 1.0599810758292072e+00f, 1.0602547314449409e+00f,
+    1.0601263046243634e+00f, 1.0606565756823634e+00f};
 
 const Float RGBRefl2SpectCyan[nRGB2SpectSamples] = {
-    1.0414628021426751e+00,  1.0328661533771188e+00,  1.0126146228964314e+00,
-    1.0350460524836209e+00,  1.0078661447098567e+00,  1.0422280385081280e+00,
-    1.0442596738499825e+00,  1.0535238290294409e+00,  1.0180776226938120e+00,
-    1.0442729908727713e+00,  1.0529362541920750e+00,  1.0537034271160244e+00,
-    1.0533901869215969e+00,  1.0537782700979574e+00,  1.0527093770467102e+00,
-    1.0530449040446797e+00,  1.0550554640191208e+00,  1.0553673610724821e+00,
-    1.0454306634683976e+00,  6.2348950639230805e-01,  1.8038071613188977e-01,
-    -7.6303759201984539e-03, -1.5217847035781367e-04, -7.5102257347258311e-03,
-    -2.1708639328491472e-03, 6.5919466602369636e-04,  1.2278815318539780e-02,
-    -4.4669775637208031e-03, 1.7119799082865147e-02,  4.9211089759759801e-03,
-    5.8762925143334985e-03,  2.5259399415550079e-02};
+     1.0414628021426751e+00f,  1.0328661533771188e+00f,  1.0126146228964314e+00f,
+     1.0350460524836209e+00f,  1.0078661447098567e+00f,  1.0422280385081280e+00f,
+     1.0442596738499825e+00f,  1.0535238290294409e+00f,  1.0180776226938120e+00f,
+     1.0442729908727713e+00f,  1.0529362541920750e+00f,  1.0537034271160244e+00f,
+     1.0533901869215969e+00f,  1.0537782700979574e+00f,  1.0527093770467102e+00f,
+     1.0530449040446797e+00f,  1.0550554640191208e+00f,  1.0553673610724821e+00f,
+     1.0454306634683976e+00f,  6.2348950639230805e-01f,  1.8038071613188977e-01f,
+    -7.6303759201984539e-03f, -1.5217847035781367e-04f, -7.5102257347258311e-03f,
+    -2.1708639328491472e-03f,  6.5919466602369636e-04f,  1.2278815318539780e-02f,
+    -4.4669775637208031e-03f,  1.7119799082865147e-02f,  4.9211089759759801e-03f,
+     5.8762925143334985e-03f,  2.5259399415550079e-02f};
 
 const Float RGBRefl2SpectMagenta[nRGB2SpectSamples] = {
     9.9422138151236850e-01,  9.8986937122975682e-01, 9.8293658286116958e-01,
@@ -1183,8 +1183,8 @@ const Float RGBIllum2SpectBlue[nRGB2SpectSamples] = {
 // others may involve downsampling. For upsampling, we just point-sample,
 // and for downsampling, we apply a box filter centered around the
 // destination wavelength with total width equal to the sample spacing.
-void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
-                            Float lambdaMin, Float lambdaMax, int nOut,
+void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, Int nIn,
+                            Float lambdaMin, Float lambdaMax, Int nOut,
                             Float *vOut) {
     CHECK_GE(nOut, 2);
     for (int i = 0; i < nIn - 1; ++i) CHECK_GT(lambdaIn[i + 1], lambdaIn[i]);
@@ -1213,7 +1213,7 @@ void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
     // increasing set of wavelength values. However, this isn't a problem
     // since we only access these virtual samples if the destination range
     // is wider than the source range.)
-    auto lambdaInClamped = [&](int index) {
+    auto lambdaInClamped = [&](Int index) {
         CHECK(index >= -1 && index <= nIn);
         if (index == -1) {
             CHECK_LT(lambdaMin - delta, lambdaIn[0]);
@@ -1227,7 +1227,7 @@ void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
 
     // Due to the piecewise-constant assumption, the SPD values outside the
     // specified range are given by the valid endpoints.
-    auto vInClamped = [&](int index) {
+    auto vInClamped = [&](Int index) {
         CHECK(index >= -1 && index <= nIn);
         return vIn[Clamp(index, 0, nIn - 1)];
     };
@@ -1250,13 +1250,13 @@ void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
         // Otherwise, find indices into the input SPD that bracket the
         // wavelength range [lambda-delta, lambda+delta]. Note that this is
         // a 2x wider range than we will actually filter over in the end.
-        size_t start, end;
+        Int start, end;
         if (lambda - delta < lambdaIn[0])
             // Virtual sample at the start, as described above.
             start = -1;
         else {
             start = FindInterval(
-                nIn, [&](int i) { return lambdaIn[i] <= lambda - delta; });
+                nIn, [&](Int i) { return lambdaIn[i] <= lambda - delta; });
             CHECK(start >= 0 && start < nIn);
         }
 

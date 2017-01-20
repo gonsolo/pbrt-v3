@@ -39,12 +39,12 @@
 namespace pbrt {
 
 // SobolSampler Method Definitions
-int64_t SobolSampler::GetIndexForSample(int64_t sampleNum) const {
+Int SobolSampler::GetIndexForSample(Int sampleNum) const {
     return SobolIntervalToIndex(log2Resolution, sampleNum,
                                 Point2i(currentPixel - sampleBounds.pMin));
 }
 
-Float SobolSampler::SampleDimension(int64_t index, size_t dim) const {
+Float SobolSampler::SampleDimension(int64_t index, Int dim) const {
     if (dim >= NumSobolDimensions)
         LOG(FATAL) << StringPrintf("SobolSampler can only sample up to %d "
                                    "dimensions! Exiting.",
@@ -58,7 +58,7 @@ Float SobolSampler::SampleDimension(int64_t index, size_t dim) const {
     return s;
 }
 
-std::unique_ptr<Sampler> SobolSampler::Clone(int seed) {
+std::unique_ptr<Sampler> SobolSampler::Clone(Int seed) {
     return std::unique_ptr<Sampler>(new SobolSampler(*this));
 }
 

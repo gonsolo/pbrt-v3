@@ -97,7 +97,7 @@ const Point2f *Sampler::Get2DArray(int n) {
     return &sampleArray2D[array2DOffset++][currentPixelSampleIndex * n];
 }
 
-PixelSampler::PixelSampler(int64_t samplesPerPixel, int nSampledDimensions)
+PixelSampler::PixelSampler(Int samplesPerPixel, Int nSampledDimensions)
     : Sampler(samplesPerPixel) {
     for (int i = 0; i < nSampledDimensions; ++i) {
         samples1D.push_back(std::vector<Float>(samplesPerPixel));
@@ -152,7 +152,7 @@ void GlobalSampler::StartPixel(const Point2i &p) {
     }
 
     // Compute 2D array samples for _GlobalSampler_
-    int dim = arrayStartDim + samples1DArraySizes.size();
+    Int dim = arrayStartDim + samples1DArraySizes.size();
     for (size_t i = 0; i < samples2DArraySizes.size(); ++i) {
         int nSamples = samples2DArraySizes[i] * samplesPerPixel;
         for (int j = 0; j < nSamples; ++j) {

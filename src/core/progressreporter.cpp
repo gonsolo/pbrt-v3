@@ -94,7 +94,7 @@ void ProgressReporter::PrintBar() {
     int plussesPrinted = 0;
 
     // Initialize progress string
-    const int bufLen = title.size() + totalPlusses + 64;
+    const Int bufLen = title.size() + totalPlusses + 64;
     std::unique_ptr<char[]> buf(new char[bufLen]);
     snprintf(buf.get(), bufLen, "\r%s: [", title.c_str());
     char *curSpace = buf.get() + strlen(buf.get());

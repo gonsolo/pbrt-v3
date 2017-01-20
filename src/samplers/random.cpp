@@ -39,7 +39,7 @@
 
 namespace pbrt {
 
-RandomSampler::RandomSampler(int ns, int seed) : Sampler(ns), rng(seed) {}
+RandomSampler::RandomSampler(Int ns, Int seed) : Sampler(ns), rng(seed) {}
 
 Float RandomSampler::Get1D() {
     ProfilePhase _(Prof::GetSample);
@@ -53,7 +53,7 @@ Point2f RandomSampler::Get2D() {
     return {rng.UniformFloat(), rng.UniformFloat()};
 }
 
-std::unique_ptr<Sampler> RandomSampler::Clone(int seed) {
+std::unique_ptr<Sampler> RandomSampler::Clone(Int seed) {
     RandomSampler *rs = new RandomSampler(*this);
     rs->rng.SetSequence(seed);
     return std::unique_ptr<Sampler>(rs);

@@ -645,7 +645,7 @@ std::string ParamSet::ToString() const {
     return ret;
 }
 
-static int print(Int i) { return printf("%d ", i); }
+static int print(Int i) { return printf("% " PRId64, i); }
 static int print(bool v) {
     return v ? printf("\"true\" ") : printf("\"false\" ");
 }

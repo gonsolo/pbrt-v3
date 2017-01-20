@@ -51,7 +51,7 @@ class Sampler {
   public:
     // Sampler Interface
     virtual ~Sampler();
-    Sampler(int64_t samplesPerPixel);
+    Sampler(Int samplesPerPixel);
     virtual void StartPixel(const Point2i &p);
     virtual Float Get1D() = 0;
     virtual Point2f Get2D() = 0;
@@ -62,36 +62,36 @@ class Sampler {
     const Float *Get1DArray(int n);
     const Point2f *Get2DArray(int n);
     virtual bool StartNextSample();
-    virtual std::unique_ptr<Sampler> Clone(int seed) = 0;
-    virtual bool SetSampleNumber(int64_t sampleNum);
+    virtual std::unique_ptr<Sampler> Clone(Int seed) = 0;
+    virtual bool SetSampleNumber(Int sampleNum);
     std::string StateString() const {
       return StringPrintf("(%d,%d), sample %" PRId64, currentPixel.x,
                           currentPixel.y, currentPixelSampleIndex);
     }
-    int64_t CurrentSampleNumber() const { return currentPixelSampleIndex; }
+    Int CurrentSampleNumber() const { return currentPixelSampleIndex; }
 
     // Sampler Public Data
-    const int64_t samplesPerPixel;
+    const Int samplesPerPixel;
 
   protected:
     // Sampler Protected Data
     Point2i currentPixel;
-    int64_t currentPixelSampleIndex;
-    std::vector<int> samples1DArraySizes, samples2DArraySizes;
+    Int currentPixelSampleIndex;
+    std::vector<Int> samples1DArraySizes, samples2DArraySizes;
     std::vector<std::vector<Float>> sampleArray1D;
     std::vector<std::vector<Point2f>> sampleArray2D;
 
   private:
     // Sampler Private Data
-    size_t array1DOffset, array2DOffset;
+    Int array1DOffset, array2DOffset;
 };
 
 class PixelSampler : public Sampler {
   public:
     // PixelSampler Public Methods
-    PixelSampler(int64_t samplesPerPixel, int nSampledDimensions);
+    PixelSampler(Int samplesPerPixel, Int nSampledDimensions);
     bool StartNextSample();
-    bool SetSampleNumber(int64_t);
+    bool SetSampleNumber(Int);
     Float Get1D();
     Point2f Get2D();
 
@@ -99,7 +99,7 @@ class PixelSampler : public Sampler {
     // PixelSampler Protected Data
     std::vector<std::vector<Float>> samples1D;
     std::vector<std::vector<Point2f>> samples2D;
-    int current1DDimension = 0, current2DDimension = 0;
+    Int current1DDimension = 0, current2DDimension = 0;
     RNG rng;
 };
 
@@ -108,19 +108,19 @@ class GlobalSampler : public Sampler {
     // GlobalSampler Public Methods
     bool StartNextSample();
     void StartPixel(const Point2i &);
-    bool SetSampleNumber(int64_t sampleNum);
+    bool SetSampleNumber(Int sampleNum);
     Float Get1D();
     Point2f Get2D();
-    GlobalSampler(int64_t samplesPerPixel) : Sampler(samplesPerPixel) {}
-    virtual int64_t GetIndexForSample(int64_t sampleNum) const = 0;
-    virtual Float SampleDimension(int64_t index, size_t dimension) const = 0;
+    GlobalSampler(Int samplesPerPixel) : Sampler(samplesPerPixel) {}
+    virtual Int GetIndexForSample(Int sampleNum) const = 0;
+    virtual Float SampleDimension(Int index, Int dimension) const = 0;
 
   private:
     // GlobalSampler Private Data
-    size_t dimension;
-    int64_t intervalSampleIndex;
-    static const size_t arrayStartDim = 5;
-    size_t arrayEndDim;
+    Int dimension;
+    Int intervalSampleIndex;
+    static const Int arrayStartDim = 5;
+    Int arrayEndDim;
 };
 
 }  // namespace pbrt
