@@ -142,7 +142,7 @@ std::shared_ptr<Triangle> GetRandomTriangle(std::function<Float()> value) {
     // Create the corresponding Triangle.
     static Transform identity;
     //Int indices[3] = {0, 1, 2};
-	std::array<Int, 3> indices{ 0, 1, 2 };
+	std::array<Int, 3> indices{ {0, 1, 2} };
     std::vector<std::shared_ptr<Shape>> triVec =
         CreateTriangleMesh(&identity, &identity, false, 1, indices.data(), 3, v,
                            nullptr, nullptr, nullptr, nullptr, nullptr);

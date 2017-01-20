@@ -58,7 +58,7 @@ class Sampler {
     CameraSample GetCameraSample(const Point2i &pRaster);
     void Request1DArray(int n);
     void Request2DArray(int n);
-    virtual int RoundCount(int n) const { return n; }
+    virtual Int RoundCount(Int n) const { return n; }
     const Float *Get1DArray(int n);
     const Point2f *Get2DArray(int n);
     virtual bool StartNextSample();
