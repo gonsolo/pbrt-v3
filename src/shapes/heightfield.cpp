@@ -50,7 +50,7 @@ std::vector<std::shared_ptr<Shape>> CreateHeightfield(
     CHECK(nx != -1 && ny != -1 && z != nullptr);
 
     int ntris = 2 * (nx - 1) * (ny - 1);
-    std::unique_ptr<int[]> indices(new int[3 * ntris]);
+    std::unique_ptr<Int[]> indices(new Int[3 * ntris]);
     std::unique_ptr<Point3f[]> P(new Point3f[nx * ny]);
     std::unique_ptr<Point2f[]> uvs(new Point2f[nx * ny]);
     int nverts = nx * ny;
@@ -66,7 +66,7 @@ std::vector<std::shared_ptr<Shape>> CreateHeightfield(
     }
 
     // Fill in heightfield vertex offset array
-    int *vp = indices.get();
+    Int *vp = indices.get();
     for (int y = 0; y < ny - 1; ++y) {
         for (int x = 0; x < nx - 1; ++x) {
 #define VERT(x, y) ((x) + (y)*nx)

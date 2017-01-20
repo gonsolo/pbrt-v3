@@ -192,7 +192,7 @@ PathIntegrator *CreatePathIntegrator(const ParamSet &params,
                                      std::shared_ptr<const Camera> camera) {
     int maxDepth = params.FindOneInt("maxdepth", 5);
     int np;
-    const int *pb = params.FindInt("pixelbounds", &np);
+    const Int *pb = params.FindInt("pixelbounds", &np);
     Bounds2i pixelBounds = camera->film->GetSampleBounds();
     if (pb) {
         if (np != 4)

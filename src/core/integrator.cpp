@@ -232,7 +232,7 @@ void SamplerIntegrator::Render(const Scene &scene) {
     // Compute number of tiles, _nTiles_, to use for parallel rendering
     Bounds2i sampleBounds = camera->film->GetSampleBounds();
     Vector2i sampleExtent = sampleBounds.Diagonal();
-    const int tileSize = 16;
+    const Int tileSize = 16;
     Point2i nTiles((sampleExtent.x + tileSize - 1) / tileSize,
                    (sampleExtent.y + tileSize - 1) / tileSize);
     ProgressReporter reporter(nTiles.x * nTiles.y, "Rendering");
@@ -248,10 +248,10 @@ void SamplerIntegrator::Render(const Scene &scene) {
             std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
 
             // Compute sample bounds for tile
-            int x0 = sampleBounds.pMin.x + tile.x * tileSize;
-            int x1 = std::min(x0 + tileSize, sampleBounds.pMax.x);
-            int y0 = sampleBounds.pMin.y + tile.y * tileSize;
-            int y1 = std::min(y0 + tileSize, sampleBounds.pMax.y);
+            Int x0 = sampleBounds.pMin.x + tile.x * tileSize;
+            Int x1 = std::min(x0 + tileSize, sampleBounds.pMax.x);
+            Int y0 = sampleBounds.pMin.y + tile.y * tileSize;
+            Int y1 = std::min(y0 + tileSize, sampleBounds.pMax.y);
             Bounds2i tileBounds(Point2i(x0, y0), Point2i(x1, y1));
             LOG(INFO) << "Starting image tile " << tileBounds;
 

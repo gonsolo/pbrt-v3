@@ -113,7 +113,7 @@ DirectLightingIntegrator *CreateDirectLightingIntegrator(
         strategy = LightStrategy::UniformSampleAll;
     }
     int np;
-    const int *pb = params.FindInt("pixelbounds", &np);
+    const Int *pb = params.FindInt("pixelbounds", &np);
     Bounds2i pixelBounds = camera->film->GetSampleBounds();
     if (pb) {
         if (np != 4)

@@ -1,5 +1,6 @@
 
 #include "tests/gtest/gtest.h"
+#include <array>
 #include <cmath>
 #include <functional>
 #include "pbrt.h"
@@ -61,7 +62,7 @@ TEST(Triangle, Watertight) {
     }
     EXPECT_EQ(nVertices, vertices.size());
 
-    std::vector<int> indices;
+    std::vector<Int> indices;
     // fan at top
     auto offset = [nPhi](int t, int p) { return t * nPhi + p; };
     for (int p = 0; p < nPhi - 1; ++p) {
@@ -92,7 +93,7 @@ TEST(Triangle, Watertight) {
 
     Transform identity;
     std::vector<std::shared_ptr<Shape>> tris = CreateTriangleMesh(
-        &identity, &identity, false, indices.size() / 3, &indices[0], nVertices,
+        &identity, &identity, false, indices.size() / 3, indices.data(), nVertices,
         &vertices[0], nullptr, nullptr, nullptr, nullptr, nullptr);
 
     for (int i = 0; i < 100000; ++i) {
@@ -140,9 +141,10 @@ std::shared_ptr<Triangle> GetRandomTriangle(std::function<Float()> value) {
 
     // Create the corresponding Triangle.
     static Transform identity;
-    int indices[3] = {0, 1, 2};
+    //Int indices[3] = {0, 1, 2};
+	std::array<Int, 3> indices{ 0, 1, 2 };
     std::vector<std::shared_ptr<Shape>> triVec =
-        CreateTriangleMesh(&identity, &identity, false, 1, indices, 3, v,
+        CreateTriangleMesh(&identity, &identity, false, 1, indices.data(), 3, v,
                            nullptr, nullptr, nullptr, nullptr, nullptr);
     EXPECT_EQ(1, triVec.size());
     std::shared_ptr<Triangle> tri =

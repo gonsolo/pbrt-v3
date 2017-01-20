@@ -126,7 +126,7 @@ void SPPMIntegrator::Render(const Scene &scene) {
 
     // Compute number of tiles to use for SPPM camera pass
     Vector2i pixelExtent = pixelBounds.Diagonal();
-    const int tileSize = 16;
+    const Int tileSize = 16;
     Point2i nTiles((pixelExtent.x + tileSize - 1) / tileSize,
                    (pixelExtent.y + tileSize - 1) / tileSize);
     ProgressReporter progress(2 * nIterations, "Rendering");
@@ -142,10 +142,10 @@ void SPPMIntegrator::Render(const Scene &scene) {
                 std::unique_ptr<Sampler> tileSampler = sampler.Clone(tileIndex);
 
                 // Compute _tileBounds_ for SPPM tile
-                int x0 = pixelBounds.pMin.x + tile.x * tileSize;
-                int x1 = std::min(x0 + tileSize, pixelBounds.pMax.x);
-                int y0 = pixelBounds.pMin.y + tile.y * tileSize;
-                int y1 = std::min(y0 + tileSize, pixelBounds.pMax.y);
+                Int x0 = pixelBounds.pMin.x + tile.x * tileSize;
+                Int x1 = std::min(x0 + tileSize, pixelBounds.pMax.x);
+                Int y0 = pixelBounds.pMin.y + tile.y * tileSize;
+                Int y1 = std::min(y0 + tileSize, pixelBounds.pMax.y);
                 Bounds2i tileBounds(Point2i(x0, y0), Point2i(x1, y1));
                 for (Point2i pPixel : tileBounds) {
                     // Prepare _tileSampler_ for _pPixel_

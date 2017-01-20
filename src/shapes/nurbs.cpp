@@ -284,8 +284,8 @@ std::vector<std::shared_ptr<Shape>> CreateNURBS(const Transform *o2w,
 
     // Generate points-polygons mesh
     int nTris = 2 * (diceu - 1) * (dicev - 1);
-    std::unique_ptr<int[]> vertices(new int[3 * nTris]);
-    int *vertp = vertices.get();
+    std::unique_ptr<Int[]> vertices(new Int[3 * nTris]);
+    Int *vertp = vertices.get();
     // Compute the vertex offset numbers for the triangles
     for (int v = 0; v < dicev - 1; ++v) {
         for (int u = 0; u < diceu - 1; ++u) {

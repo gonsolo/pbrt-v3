@@ -315,7 +315,7 @@ void BDPTIntegrator::Render(const Scene &scene) {
     Film *film = camera->film;
     const Bounds2i sampleBounds = film->GetSampleBounds();
     const Vector2i sampleExtent = sampleBounds.Diagonal();
-    const int tileSize = 16;
+    const Int tileSize = 16;
     const int nXTiles = (sampleExtent.x + tileSize - 1) / tileSize;
     const int nYTiles = (sampleExtent.y + tileSize - 1) / tileSize;
     ProgressReporter reporter(nXTiles * nYTiles, "Rendering");
@@ -348,10 +348,10 @@ void BDPTIntegrator::Render(const Scene &scene) {
             MemoryArena arena;
             int seed = tile.y * nXTiles + tile.x;
             std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
-            int x0 = sampleBounds.pMin.x + tile.x * tileSize;
-            int x1 = std::min(x0 + tileSize, sampleBounds.pMax.x);
-            int y0 = sampleBounds.pMin.y + tile.y * tileSize;
-            int y1 = std::min(y0 + tileSize, sampleBounds.pMax.y);
+            Int x0 = sampleBounds.pMin.x + tile.x * tileSize;
+            Int x1 = std::min(x0 + tileSize, sampleBounds.pMax.x);
+            Int y0 = sampleBounds.pMin.y + tile.y * tileSize;
+            Int y1 = std::min(y0 + tileSize, sampleBounds.pMax.y);
             Bounds2i tileBounds(Point2i(x0, y0), Point2i(x1, y1));
             std::unique_ptr<FilmTile> filmTile =
                 camera->film->GetFilmTile(tileBounds);
@@ -545,7 +545,7 @@ BDPTIntegrator *CreateBDPTIntegrator(const ParamSet &params,
         maxDepth = 5;
     }
     int np;
-    const int *pb = params.FindInt("pixelbounds", &np);
+    const Int *pb = params.FindInt("pixelbounds", &np);
     Bounds2i pixelBounds = camera->film->GetSampleBounds();
     if (pb) {
         if (np != 4)

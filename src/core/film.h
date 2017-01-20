@@ -116,7 +116,7 @@ class FilmTile {
           filterTable(filterTable),
           filterTableSize(filterTableSize),
           maxSampleLuminance(maxSampleLuminance) {
-        pixels = std::vector<FilmTilePixel>(std::max(0, pixelBounds.Area()));
+        pixels = std::vector<FilmTilePixel>(std::max((Int)0, pixelBounds.Area()));
     }
     void AddSample(const Point2f &pFilm, Spectrum L,
                    Float sampleWeight = 1.) {

@@ -140,7 +140,7 @@ MIPMap<T>::MIPMap(const Point2i &res, const T *img, bool doTrilinear,
                 // Compute texel $(s,t)$ in $s$-zoomed image
                 resampledImage[t * resPow2[0] + s] = 0.f;
                 for (int j = 0; j < 4; ++j) {
-                    int origS = sWeights[s].firstTexel + j;
+                    Int origS = sWeights[s].firstTexel + j;
                     if (wrapMode == ImageWrap::Repeat)
                         origS = Mod(origS, resolution[0]);
                     else if (wrapMode == ImageWrap::Clamp)
@@ -165,7 +165,7 @@ MIPMap<T>::MIPMap(const Point2i &res, const T *img, bool doTrilinear,
             for (int t = 0; t < resPow2[1]; ++t) {
                 workData[t] = 0.f;
                 for (int j = 0; j < 4; ++j) {
-                    int offset = tWeights[t].firstTexel + j;
+                    Int offset = tWeights[t].firstTexel + j;
                     if (wrapMode == ImageWrap::Repeat)
                         offset = Mod(offset, resolution[1]);
                     else if (wrapMode == ImageWrap::Clamp)

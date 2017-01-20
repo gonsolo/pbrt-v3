@@ -697,7 +697,7 @@ static void InitParamSet(ParamSet &ps, SpectrumType type) {
             if (type == PARAM_TYPE_INT) {
                 // parser doesn't handle ints, so convert from doubles here....
                 int nAlloc = nItems;
-                std::unique_ptr<int[]> idata(new int[nAlloc]);
+                std::unique_ptr<Int[]> idata(new Int[nAlloc]);
                 double *fdata = (double *)cur_paramlist[i].arg;
                 for (int j = 0; j < nAlloc; ++j)
                     idata[j] = int(fdata[j]);

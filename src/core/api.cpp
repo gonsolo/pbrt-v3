@@ -332,7 +332,7 @@ std::vector<std::shared_ptr<Shape>> MakeShapes(const std::string &name,
             std::string fn = StringPrintf("%s_%05d.ply", plyPrefix, count++);
 
             int nvi, npi, nuvi, nsi, nni;
-            const int *vi = paramSet.FindInt("indices", &nvi);
+            const Int *vi = paramSet.FindInt("indices", &nvi);
             const Point3f *P = paramSet.FindPoint3f("P", &npi);
             const Point2f *uvs = paramSet.FindPoint2f("uv", &nuvi);
             if (!uvs) uvs = paramSet.FindPoint2f("st", &nuvi);

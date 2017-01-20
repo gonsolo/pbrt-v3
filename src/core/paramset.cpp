@@ -65,10 +65,10 @@ void ParamSet::AddFloat(const std::string &name,
         new ParamSetItem<Float>(name, std::move(values), nValues));
 }
 
-void ParamSet::AddInt(const std::string &name, std::unique_ptr<int[]> values,
+void ParamSet::AddInt(const std::string &name, std::unique_ptr<Int[]> values,
                       int nValues) {
     EraseInt(name);
-    ADD_PARAM_TYPE(int, ints);
+    ADD_PARAM_TYPE(Int, ints);
 }
 
 void ParamSet::AddBool(const std::string &name, std::unique_ptr<bool[]> values,
@@ -341,7 +341,7 @@ const Float *ParamSet::FindFloat(const std::string &name, int *n) const {
     return nullptr;
 }
 
-const int *ParamSet::FindInt(const std::string &name, int *nValues) const {
+const Int *ParamSet::FindInt(const std::string &name, int *nValues) const {
     LOOKUP_PTR(ints);
 }
 
@@ -481,7 +481,7 @@ std::string ParamSet::ToString() const {
     int j;
     std::string typeString;
     for (i = 0; i < ints.size(); ++i) {
-        const std::shared_ptr<ParamSetItem<int>> &item = ints[i];
+        const std::shared_ptr<ParamSetItem<Int>> &item = ints[i];
         typeString = "integer ";
         // Print _ParamSetItem_ declaration, determine how many to print
         int nPrint = item->nValues;
@@ -645,7 +645,7 @@ std::string ParamSet::ToString() const {
     return ret;
 }
 
-static int print(int i) { return printf("%d ", i); }
+static int print(Int i) { return printf("%d ", i); }
 static int print(bool v) {
     return v ? printf("\"true\" ") : printf("\"false\" ");
 }

@@ -56,7 +56,7 @@ class ParamSet {
     ParamSet() {}
     void AddFloat(const std::string &, std::unique_ptr<Float[]> v,
                   int nValues = 1);
-    void AddInt(const std::string &, std::unique_ptr<int[]> v, int nValues);
+    void AddInt(const std::string &, std::unique_ptr<Int[]> v, int nValues);
     void AddBool(const std::string &, std::unique_ptr<bool[]> v, int nValues);
     void AddPoint2f(const std::string &, std::unique_ptr<Point2f[]> v,
                     int nValues);
@@ -106,7 +106,7 @@ class ParamSet {
                                 const std::string &d) const;
     std::string FindTexture(const std::string &) const;
     const Float *FindFloat(const std::string &, int *n) const;
-    const int *FindInt(const std::string &, int *nValues) const;
+    const Int *FindInt(const std::string &, int *nValues) const;
     const bool *FindBool(const std::string &, int *nValues) const;
     const Point2f *FindPoint2f(const std::string &, int *nValues) const;
     const Vector2f *FindVector2f(const std::string &, int *nValues) const;
@@ -123,7 +123,7 @@ class ParamSet {
   private:
     // ParamSet Private Data
     std::vector<std::shared_ptr<ParamSetItem<bool>>> bools;
-    std::vector<std::shared_ptr<ParamSetItem<int>>> ints;
+    std::vector<std::shared_ptr<ParamSetItem<Int>>> ints;
     std::vector<std::shared_ptr<ParamSetItem<Float>>> floats;
     std::vector<std::shared_ptr<ParamSetItem<Point2f>>> point2fs;
     std::vector<std::shared_ptr<ParamSetItem<Vector2f>>> vector2fs;

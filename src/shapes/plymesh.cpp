@@ -46,7 +46,7 @@ struct CallbackContext {
     Point3f *p;
     Normal3f *n;
     Point2f *uv;
-    int *indices;
+    Int *indices;
     int indexCtr;
     int face[4];
     bool error;
@@ -218,7 +218,7 @@ std::vector<std::shared_ptr<Shape>> CreatePLYMesh(
         context.uv = new Point2f[vertexCount];
 
     /* Allocate enough space in case all faces are quads */
-    context.indices = new int[faceCount * 6];
+    context.indices = new Int[faceCount * 6];
     context.vertexCount = vertexCount;
 
     ply_set_read_cb(ply, "face", "vertex_indices", rply_face_callback, &context,

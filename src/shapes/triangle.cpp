@@ -52,7 +52,7 @@ static void PlyErrorCallback(p_ply, const char *message) {
 // Triangle Method Definitions
 STAT_RATIO("Scene/Triangles per triangle mesh", nTris, nMeshes);
 TriangleMesh::TriangleMesh(
-    const Transform &ObjectToWorld, int nTriangles, const int *vertexIndices,
+    const Transform &ObjectToWorld, int nTriangles, const Int *vertexIndices,
     int nVertices, const Point3f *P, const Vector3f *S, const Normal3f *N,
     const Point2f *UV, const std::shared_ptr<Texture<Float>> &alphaMask,
     const std::shared_ptr<Texture<Float>> &shadowAlphaMask)
@@ -88,7 +88,7 @@ TriangleMesh::TriangleMesh(
 
 std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
     const Transform *ObjectToWorld, const Transform *WorldToObject,
-    bool reverseOrientation, int nTriangles, const int *vertexIndices,
+    bool reverseOrientation, int nTriangles, const Int *vertexIndices,
     int nVertices, const Point3f *p, const Vector3f *s, const Normal3f *n,
     const Point2f *uv, const std::shared_ptr<Texture<Float>> &alphaMask,
     const std::shared_ptr<Texture<Float>> &shadowAlphaMask) {
@@ -104,7 +104,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
 }
 
 bool WritePlyFile(const std::string &filename, int nTriangles,
-                  const int *vertexIndices, int nVertices, const Point3f *P,
+                  const Int *vertexIndices, int nVertices, const Point3f *P,
                   const Vector3f *S, const Normal3f *N, const Point2f *UV) {
     p_ply plyFile =
         ply_create(filename.c_str(), PLY_DEFAULT, PlyErrorCallback, 0, nullptr);
@@ -610,7 +610,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMeshShape(
     const ParamSet &params,
     std::map<std::string, std::shared_ptr<Texture<Float>>> *floatTextures) {
     int nvi, npi, nuvi, nsi, nni;
-    const int *vi = params.FindInt("indices", &nvi);
+    const Int *vi = params.FindInt("indices", &nvi);
     const Point3f *P = params.FindPoint3f("P", &npi);
     const Point2f *uvs = params.FindPoint2f("uv", &nuvi);
     if (!uvs) uvs = params.FindPoint2f("st", &nuvi);

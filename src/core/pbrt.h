@@ -146,6 +146,11 @@ typedef double Float;
 #else
 typedef float Float;
 #endif  // PBRT_FLOAT_AS_DOUBLE
+
+// Assume 64 bit for now
+typedef int64_t Int;
+typedef uint64_t UInt;
+
 class RNG;
 class ProgressReporter;
 class MemoryArena;

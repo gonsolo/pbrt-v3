@@ -149,7 +149,7 @@ inline Float loopGamma(int valence) {
 static std::vector<std::shared_ptr<Shape>> LoopSubdivide(
     const Transform *ObjectToWorld, const Transform *WorldToObject,
     bool reverseOrientation, int nLevels, int nIndices,
-    const int *vertexIndices, int nVertices, const Point3f *p) {
+    const Int *vertexIndices, int nVertices, const Point3f *p) {
     std::vector<SDVertex *> vertices;
     std::vector<SDFace *> faces;
     // Allocate _LoopSubdiv_ vertices and faces
@@ -163,7 +163,7 @@ static std::vector<std::shared_ptr<Shape>> LoopSubdivide(
     for (int i = 0; i < nFaces; ++i) faces.push_back(&fs[i]);
 
     // Set face to vertex pointers
-    const int *vp = vertexIndices;
+    const Int *vp = vertexIndices;
     for (int i = 0; i < nFaces; ++i, vp += 3) {
         SDFace *f = faces[i];
         for (int j = 0; j < 3; ++j) {
@@ -381,8 +381,8 @@ static std::vector<std::shared_ptr<Shape>> LoopSubdivide(
     // Create triangle mesh from subdivision mesh
     {
         size_t ntris = f.size();
-        std::unique_ptr<int[]> verts(new int[3 * ntris]);
-        int *vp = verts.get();
+        std::unique_ptr<Int[]> verts(new Int[3 * ntris]);
+        Int *vp = verts.get();
         size_t totVerts = v.size();
         std::map<SDVertex *, size_t> usedVerts;
         for (size_t i = 0; i < totVerts; ++i) usedVerts[v[i]] = i;
@@ -406,7 +406,7 @@ std::vector<std::shared_ptr<Shape>> CreateLoopSubdiv(const Transform *o2w,
     int nLevels = params.FindOneInt("levels",
                                     params.FindOneInt("nlevels", 3));
     int nps, nIndices;
-    const int *vertexIndices = params.FindInt("indices", &nIndices);
+    const Int *vertexIndices = params.FindInt("indices", &nIndices);
     const Point3f *P = params.FindPoint3f("P", &nps);
     if (!vertexIndices) {
         Error("Vertex indices \"indices\" not provided for LoopSubdiv shape.");

@@ -39,7 +39,7 @@
 namespace pbrt {
 
 // HaltonSampler Local Constants
-static PBRT_CONSTEXPR int kMaxResolution = 128;
+static PBRT_CONSTEXPR Int kMaxResolution = 128;
 
 // HaltonSampler Utility Functions
 static void extendedGCD(uint64_t a, uint64_t b, int64_t *x, int64_t *y);
@@ -74,8 +74,8 @@ HaltonSampler::HaltonSampler(int samplesPerPixel, const Bounds2i &sampleBounds,
     // Find radical inverse base scales and exponents that cover sampling area
     Vector2i res = sampleBounds.pMax - sampleBounds.pMin;
     for (int i = 0; i < 2; ++i) {
-        int base = (i == 0) ? 2 : 3;
-        int scale = 1, exp = 0;
+        Int base = (i == 0) ? 2 : 3;
+        Int scale = 1, exp = 0;
         while (scale < std::min(res[i], kMaxResolution)) {
             scale *= base;
             ++exp;

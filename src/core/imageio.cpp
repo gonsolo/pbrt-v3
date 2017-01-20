@@ -49,12 +49,12 @@ static void WriteImageEXR(const std::string &name, const Float *pixels,
 static void WriteImageTGA(const std::string &name, const uint8_t *pixels,
                           int xRes, int yRes, int totalXRes, int totalYRes,
                           int xOffset, int yOffset);
-static RGBSpectrum *ReadImageTGA(const std::string &name, int *w, int *h);
-static RGBSpectrum *ReadImagePNG(const std::string &name, int *w, int *h);
+static RGBSpectrum *ReadImageTGA(const std::string &name, Int *w, Int *h);
+static RGBSpectrum *ReadImagePNG(const std::string &name, Int *w, Int *h);
 static bool WriteImagePFM(const std::string &filename, const Float *rgb,
                           int xres, int yres);
-static RGBSpectrum *ReadImagePFM(const std::string &filename, int *xres,
-                                 int *yres);
+static RGBSpectrum *ReadImagePFM(const std::string &filename, Int *xres,
+                                 Int *yres);
 
 // ImageIO Function Definitions
 std::unique_ptr<RGBSpectrum[]> ReadImage(const std::string &name,
@@ -121,7 +121,7 @@ void WriteImage(const std::string &name, const Float *rgb,
     }
 }
 
-RGBSpectrum *ReadImageEXR(const std::string &name, int *width, int *height,
+RGBSpectrum *ReadImageEXR(const std::string &name, Int *width, Int *height,
                           Bounds2i *dataWindow, Bounds2i *displayWindow) {
     using namespace Imf;
     using namespace Imath;
@@ -213,8 +213,8 @@ void WriteImageTGA(const std::string &name, const uint8_t *pixels, int xRes,
               name.c_str(), tga_error(result));
 }
 
-static RGBSpectrum *ReadImageTGA(const std::string &name, int *width,
-                                 int *height) {
+static RGBSpectrum *ReadImageTGA(const std::string &name, Int *width,
+                                 Int *height) {
     tga_image img;
     tga_result result;
     if ((result = tga_read(&img, name.c_str())) != TGA_NOERR) {
@@ -255,8 +255,8 @@ static RGBSpectrum *ReadImageTGA(const std::string &name, int *width,
     return ret;
 }
 
-static RGBSpectrum *ReadImagePNG(const std::string &name, int *width,
-                                 int *height) {
+static RGBSpectrum *ReadImagePNG(const std::string &name, Int *width,
+                                 Int *height) {
     unsigned char *rgb;
     unsigned w, h;
     unsigned int error = lodepng_decode24_file(&rgb, &w, &h, name.c_str());
@@ -347,8 +347,8 @@ static int readWord(FILE *fp, char *buffer, int bufferLength) {
     return -1;
 }
 
-static RGBSpectrum *ReadImagePFM(const std::string &filename, int *xres,
-                                 int *yres) {
+static RGBSpectrum *ReadImagePFM(const std::string &filename, Int *xres,
+                                 Int *yres) {
     float *data = nullptr;
     RGBSpectrum *rgb = nullptr;
     char buffer[BUFFER_SIZE];
