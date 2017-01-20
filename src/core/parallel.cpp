@@ -52,7 +52,7 @@ static std::mutex workListMutex;
 // MergeWorkerThreadStats().
 static std::atomic<bool> reportWorkerStats{false};
 // Number of workers that still need to report their stats.
-static std::atomic<int> reporterCount;
+static std::atomic<Int> reporterCount;
 // After kicking the workers to report their stats, the main thread waits
 // on this condition variable until they've all done so.
 static std::condition_variable reportDoneCondition;
