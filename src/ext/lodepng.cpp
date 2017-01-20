@@ -683,13 +683,13 @@ typedef struct BPMNode
 typedef struct BPMLists
 {
   /*memory pool*/
-  unsigned memsize;
+  size_t memsize;
   BPMNode* memory;
-  unsigned numfree;
+  size_t numfree;
   unsigned nextfree;
   BPMNode** freelist;
   /*two heads of lookahead chains per list*/
-  unsigned listsize;
+  size_t listsize;
   BPMNode** chains0;
   BPMNode** chains1;
 } BPMLists;
@@ -787,7 +787,7 @@ static void boundaryPM(BPMLists* lists, BPMNode* leaves, size_t numpresent, int 
 }
 
 unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequencies,
-                                      size_t numcodes, unsigned maxbitlen)
+                                      size_t numcodes, size_t maxbitlen)
 {
   unsigned error = 0;
   unsigned i;
@@ -795,7 +795,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
   BPMNode* leaves; /*the symbols, only those with > 0 frequency*/
 
   if(numcodes == 0) return 80; /*error: a tree of 0 symbols is not supposed to be made*/
-  if((1u << maxbitlen) < numcodes) return 80; /*error: represent all symbols*/
+  if(((size_t)1 << maxbitlen) < numcodes) return 80; /*error: represent all symbols*/
 
   leaves = (BPMNode*)lodepng_malloc(numcodes * sizeof(*leaves));
   if(!leaves) return 83; /*alloc fail*/
@@ -1366,14 +1366,14 @@ static const unsigned HASH_BIT_MASK = 65535; /*HASH_NUM_VALUES - 1, but C90 does
 
 typedef struct Hash
 {
-  int* head; /*hash value to head circular pos - can be outdated if went around window*/
+  size_t* head; /*hash value to head circular pos - can be outdated if went around window*/
   /*circular pos to prev circular pos*/
   unsigned short* chain;
   int* val; /*circular pos to hash value*/
 
   /*TODO: do this not only for zeros but for any repeated byte. However for PNG
   it's always going to be the zeros that dominate, so not important for PNG*/
-  int* headz; /*similar to head, but for chainz*/
+  size_t* headz; /*similar to head, but for chainz*/
   unsigned short* chainz; /*those with same amount of zeros*/
   unsigned short* zeros; /*length of zeros streak, used as a second hash chain*/
 } Hash;
@@ -1381,12 +1381,12 @@ typedef struct Hash
 static unsigned hash_init(Hash* hash, unsigned windowsize)
 {
   unsigned i;
-  hash->head = (int*)lodepng_malloc(sizeof(int) * HASH_NUM_VALUES);
+  hash->head = (size_t*)lodepng_malloc(sizeof(size_t) * HASH_NUM_VALUES);
   hash->val = (int*)lodepng_malloc(sizeof(int) * windowsize);
   hash->chain = (unsigned short*)lodepng_malloc(sizeof(unsigned short) * windowsize);
 
   hash->zeros = (unsigned short*)lodepng_malloc(sizeof(unsigned short) * windowsize);
-  hash->headz = (int*)lodepng_malloc(sizeof(int) * (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
+  hash->headz = (size_t*)lodepng_malloc(sizeof(size_t) * (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
   hash->chainz = (unsigned short*)lodepng_malloc(sizeof(unsigned short) * windowsize);
 
   if(!hash->head || !hash->chain || !hash->val  || !hash->headz|| !hash->chainz || !hash->zeros)
@@ -1454,11 +1454,11 @@ static unsigned countZeros(const unsigned char* data, size_t size, size_t pos)
 static void updateHashChain(Hash* hash, size_t wpos, unsigned hashval, unsigned short numzeros)
 {
   hash->val[wpos] = (int)hashval;
-  if(hash->head[hashval] != -1) hash->chain[wpos] = hash->head[hashval];
+  if(hash->head[hashval] != -1) hash->chain[wpos] = static_cast<unsigned short>(hash->head[hashval]);
   hash->head[hashval] = wpos;
 
   hash->zeros[wpos] = numzeros;
-  if(hash->headz[numzeros] != -1) hash->chainz[wpos] = hash->headz[numzeros];
+  if(hash->headz[numzeros] != -1) hash->chainz[wpos] = static_cast<unsigned short>(hash->headz[numzeros]);
   hash->headz[numzeros] = wpos;
 }
 
@@ -1484,13 +1484,13 @@ static unsigned encodeLZ77(uivector* out, Hash* hash,
   unsigned usezeros = 1; /*not sure if setting it to false for windowsize < 8192 is better or worse*/
   unsigned numzeros = 0;
 
-  unsigned offset; /*the offset represents the distance in LZ77 terminology*/
-  unsigned length;
+  size_t offset; /*the offset represents the distance in LZ77 terminology*/
+  size_t length;
   unsigned lazy = 0;
-  unsigned lazylength = 0, lazyoffset = 0;
+  size_t lazylength = 0, lazyoffset = 0;
   unsigned hashval;
-  unsigned current_offset, current_length;
-  unsigned prev_offset;
+  size_t current_offset, current_length;
+  size_t prev_offset;
   const unsigned char *lastptr, *foreptr, *backptr;
   unsigned hashpos;
 
@@ -2545,7 +2545,7 @@ unsigned lodepng_chunk_create(unsigned char** out, size_t* outlength, unsigned l
 /* ////////////////////////////////////////////////////////////////////////// */
 
 /*return type is a LodePNG error code*/
-static unsigned checkColorValidity(LodePNGColorType colortype, unsigned bd) /*bd = bitdepth*/
+static unsigned checkColorValidity(LodePNGColorType colortype, size_t bd) /*bd = bitdepth*/
 {
   switch(colortype)
   {
@@ -2559,7 +2559,7 @@ static unsigned checkColorValidity(LodePNGColorType colortype, unsigned bd) /*bd
   return 0; /*allowed color type / bits combination*/
 }
 
-static unsigned getNumColorChannels(LodePNGColorType colortype)
+static size_t getNumColorChannels(LodePNGColorType colortype)
 {
   switch(colortype)
   {
@@ -2572,7 +2572,7 @@ static unsigned getNumColorChannels(LodePNGColorType colortype)
   return 0; /*unexisting color type*/
 }
 
-static unsigned lodepng_get_bpp_lct(LodePNGColorType colortype, unsigned bitdepth)
+static size_t lodepng_get_bpp_lct(LodePNGColorType colortype, size_t bitdepth)
 {
   /*bits per pixel is amount of channels * bits per channel*/
   return getNumColorChannels(colortype) * bitdepth;
@@ -2708,7 +2708,7 @@ unsigned lodepng_can_have_alpha(const LodePNGColorMode* info)
 size_t lodepng_get_raw_size(unsigned w, unsigned h, const LodePNGColorMode* color)
 {
   /*will not overflow for any color type if roughly w * h < 268435455*/
-  size_t bpp = lodepng_get_bpp(color);
+  unsigned bpp = lodepng_get_bpp(color);
   size_t n = w * h;
   return ((n / 8) * bpp) + ((n & 7) * bpp + 7) / 8;
 }
@@ -2728,7 +2728,7 @@ size_t lodepng_get_raw_size_lct(unsigned w, unsigned h, LodePNGColorType colorty
 static size_t lodepng_get_raw_size_idat(unsigned w, unsigned h, const LodePNGColorMode* color)
 {
   /*will not overflow for any color type if roughly w * h < 268435455*/
-  size_t bpp = lodepng_get_bpp(color);
+  unsigned bpp = lodepng_get_bpp(color);
   size_t line = ((w / 8) * bpp) + ((w & 7) * bpp + 7) / 8;
   return h * line;
 }
@@ -2978,7 +2978,7 @@ void lodepng_info_swap(LodePNGInfo* a, LodePNGInfo* b)
 /* ////////////////////////////////////////////////////////////////////////// */
 
 /*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
-static void addColorBits(unsigned char* out, size_t index, unsigned bits, unsigned in)
+static void addColorBits(unsigned char* out, size_t index, size_t bits, unsigned in)
 {
   unsigned m = bits == 1 ? 7 : bits == 2 ? 3 : 1; /*8 / bits - 1*/
   /*p = the partial index in the byte, e.g. with 4 palettebits it is 0 for first half or 1 for second half*/
@@ -3046,7 +3046,7 @@ static int color_tree_has(ColorTree* tree, unsigned char r, unsigned char g, uns
 /*color is not allowed to already exist.
 Index should be >= 0 (it's signed to be compatible with using -1 for "doesn't exist")*/
 static void color_tree_add(ColorTree* tree,
-                           unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
+                           unsigned char r, unsigned char g, unsigned char b, unsigned char a, size_t index)
 {
   int bit;
   for(bit = 0; bit < 8; ++bit)
@@ -3475,7 +3475,7 @@ unsigned lodepng_convert(unsigned char* out, const unsigned char* in,
   {
     size_t palettesize = mode_out->palettesize;
     const unsigned char* palette = mode_out->palette;
-    size_t palsize = 1u << mode_out->bitdepth;
+    size_t palsize = (size_t)1u << mode_out->bitdepth;
     /*if the user specified output palette but did not give the values, assume
     they want the values of the input color type (assuming that one is palette).
     Note that we never create a new palette ourselves.*/
@@ -4307,7 +4307,7 @@ static unsigned readChunk_tEXt(LodePNGInfo* info, const unsigned char* data, siz
 
   while(!error) /*not really a while loop, only used to break on error*/
   {
-    unsigned length, string2_begin;
+    size_t length, string2_begin;
 
     length = 0;
     while(length < chunkLength && data[length] != 0) ++length;
@@ -4348,7 +4348,7 @@ static unsigned readChunk_zTXt(LodePNGInfo* info, const LodePNGDecompressSetting
   unsigned error = 0;
   unsigned i;
 
-  unsigned length, string2_begin;
+  size_t length, string2_begin;
   char *key = 0;
   ucvector decoded;
 
@@ -4395,9 +4395,9 @@ static unsigned readChunk_iTXt(LodePNGInfo* info, const LodePNGDecompressSetting
                                const unsigned char* data, size_t chunkLength)
 {
   unsigned error = 0;
-  unsigned i;
+  size_t i;
 
-  unsigned length, begin, compressed;
+  size_t length, begin, compressed;
   char *key = 0, *langtag = 0, *transkey = 0;
   ucvector decoded;
   ucvector_init(&decoded);
@@ -4880,7 +4880,7 @@ static void writeSignature(ucvector* out)
 }
 
 static unsigned addChunk_IHDR(ucvector* out, unsigned w, unsigned h,
-                              LodePNGColorType colortype, unsigned bitdepth, unsigned interlace_method)
+                              LodePNGColorType colortype, size_t bitdepth, unsigned interlace_method)
 {
   unsigned error = 0;
   ucvector header;
@@ -5394,7 +5394,7 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
     {
       for(type = 0; type != 5; ++type)
       {
-        unsigned testsize = linebytes;
+        size_t testsize = linebytes;
         /*if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row*/
 
         filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);

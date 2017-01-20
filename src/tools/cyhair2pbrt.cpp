@@ -425,7 +425,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (argc > 4) {
-        user_thickness = atoi(argv[4]);
+        user_thickness = (float)atoi(argv[4]);
     }
 
     cyhair::CyHair hair;
