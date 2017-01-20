@@ -38,6 +38,8 @@
 #include "api.h"
 #include "fileutil.h"
 
+#define YY_NO_INPUT
+
 #if defined(PBRT_IS_MSVC)
 #include <io.h>
 #pragma warning(disable:4244)

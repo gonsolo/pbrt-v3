@@ -66,8 +66,15 @@ ENDIF()
 
 # Optionally use Bison and Flex to regenerate parser files
 # Use pregenerated files otherwise (may be outdated)
+
+# Flex on macOS is the outdated version 2.5. Brew has 2.6
+IF(APPLE)
+  SET(CMAKE_PREFIX_PATH "/usr/local/opt/flex/bin;/usr/local/opt/bison/bin")
+ENDIF()
+
+# Version 2.6 is needed for nounistd
+FIND_PACKAGE ( FLEX 2.6 )
 FIND_PACKAGE ( BISON )
-FIND_PACKAGE ( FLEX )
 IF(BISON_FOUND AND FLEX_FOUND)
   SET(BisonOutput ${CMAKE_BINARY_DIR}/pbrtparse.cpp)
   ADD_CUSTOM_COMMAND(
