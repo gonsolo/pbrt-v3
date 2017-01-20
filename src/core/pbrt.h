@@ -46,8 +46,8 @@
 #pragma warning(disable : 4305)  // double constant assigned to float
 #pragma warning(disable : 4244)  // int -> float conversion
 #pragma warning(disable : 4843)  // double -> float conversion
-#pragma warning(disable : 4005) // macro redefinition in Windows system files
-#pragma warning(disable : 4244) // truncation in type_traits
+#pragma warning(disable : 4005)  // macro redefinition in Windows system files
+#pragma warning(disable : 4244)  // truncation in type_traits
 #include <float.h>
 #include <intrin.h>
 #endif
