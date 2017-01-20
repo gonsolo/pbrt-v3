@@ -101,7 +101,7 @@ int GenerateLightSubpath(
     ProfilePhase _(Prof::BDPTGenerateSubpath);
     // Sample initial ray for light subpath
     Float lightPdf;
-    int lightNum = lightDistr.SampleDiscrete(sampler.Get1D(), &lightPdf);
+    Int lightNum = lightDistr.SampleDiscrete(sampler.Get1D(), &lightPdf);
     const std::shared_ptr<Light> &light = scene.lights[lightNum];
     RayDifferential ray;
     Normal3f nLight;
@@ -485,7 +485,7 @@ Spectrum ConnectBDPT(
             VisibilityTester vis;
             Vector3f wi;
             Float pdf;
-            int lightNum =
+            Int lightNum =
                 lightDistr.SampleDiscrete(sampler.Get1D(), &lightPdf);
             const std::shared_ptr<Light> &light = scene.lights[lightNum];
             Spectrum lightWeight = light->Sample_Li(

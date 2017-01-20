@@ -202,7 +202,7 @@ Spectrum TabulatedBSSRDF::Sr(Float r) const {
         Float rOptical = r * sigma_t[ch];
 
         // Compute spline weights to interpolate BSSRDF on channel _ch_
-        int rhoOffset, radiusOffset;
+        Int rhoOffset, radiusOffset;
         Float rhoWeights[4], radiusWeights[4];
         if (!CatmullRomWeights(table.nRhoSamples, table.rhoSamples.get(),
                                rho[ch], &rhoOffset, rhoWeights) ||
@@ -360,7 +360,7 @@ Float TabulatedBSSRDF::Pdf_Sr(int ch, Float r) const {
     Float rOptical = r * sigma_t[ch];
 
     // Compute spline weights to interpolate BSSRDF density on channel _ch_
-    int rhoOffset, radiusOffset;
+    Int rhoOffset, radiusOffset;
     Float rhoWeights[4], radiusWeights[4];
     if (!CatmullRomWeights(table.nRhoSamples, table.rhoSamples.get(), rho[ch],
                            &rhoOffset, rhoWeights) ||

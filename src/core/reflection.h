@@ -146,7 +146,7 @@ struct FourierBSDFTable {
         *mptr = m[offsetO * nMu + offsetI];
         return a + aOffset[offsetO * nMu + offsetI];
     }
-    bool GetWeightsAndOffset(Float cosTheta, int *offset,
+    bool GetWeightsAndOffset(Float cosTheta, Int *offset,
                              Float weights[4]) const;
 };
 

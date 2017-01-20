@@ -218,7 +218,7 @@ void MLTIntegrator::Render(const Scene &scene) {
 
             // Select initial state from the set of bootstrap samples
             RNG rng(i);
-            int bootstrapIndex = bootstrap.SampleDiscrete(rng.UniformFloat());
+            Int bootstrapIndex = bootstrap.SampleDiscrete(rng.UniformFloat());
             int depth = bootstrapIndex % (maxDepth + 1);
 
             // Initialize local variables for selected state

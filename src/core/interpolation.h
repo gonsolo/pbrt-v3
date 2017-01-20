@@ -44,19 +44,19 @@
 namespace pbrt {
 
 // Spline Interpolation Declarations
-Float CatmullRom(int size, const Float *nodes, const Float *values, Float x);
-bool CatmullRomWeights(int size, const Float *nodes, Float x, int *offset,
+Float CatmullRom(Int size, const Float *nodes, const Float *values, Float x);
+bool CatmullRomWeights(Int size, const Float *nodes, Float x, Int *offset,
                        Float *weights);
 Float SampleCatmullRom(int size, const Float *nodes, const Float *f,
                        const Float *cdf, Float sample, Float *fval = nullptr,
                        Float *pdf = nullptr);
-Float SampleCatmullRom2D(int size1, int size2, const Float *nodes1,
+Float SampleCatmullRom2D(Int size1, Int size2, const Float *nodes1,
                          const Float *nodes2, const Float *values,
                          const Float *cdf, Float alpha, Float sample,
                          Float *fval = nullptr, Float *pdf = nullptr);
 Float IntegrateCatmullRom(int n, const Float *nodes, const Float *values,
                           Float *cdf);
-Float InvertCatmullRom(int n, const Float *x, const Float *values, Float u);
+Float InvertCatmullRom(Int n, const Float *x, const Float *values, Float u);
 
 // Fourier Interpolation Declarations
 Float Fourier(const Float *a, int m, double cosPhi);

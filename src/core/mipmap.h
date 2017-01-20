@@ -67,7 +67,7 @@ class MIPMap {
            Float maxAniso = 8.f, ImageWrap wrapMode = ImageWrap::Repeat);
     int Width() const { return resolution[0]; }
     int Height() const { return resolution[1]; }
-    int Levels() const { return pyramid.size(); }
+    Int Levels() const { return pyramid.size(); }
     const T &Texel(int level, int s, int t) const;
     T Lookup(const Point2f &st, Float width = 0.f) const;
     T Lookup(const Point2f &st, Vector2f dstdx, Vector2f dstdy) const;

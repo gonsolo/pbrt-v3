@@ -312,7 +312,7 @@ Spectrum FourierBSDF::f(const Vector3f &wo, const Vector3f &wi) const {
     // Compute Fourier coefficients $a_k$ for $(\mui, \muo)$
 
     // Determine offsets and weights for $\mui$ and $\muo$
-    int offsetI, offsetO;
+    Int offsetI, offsetO;
     Float weightsI[4], weightsO[4];
     if (!bsdfTable.GetWeightsAndOffset(muI, &offsetI, weightsI) ||
         !bsdfTable.GetWeightsAndOffset(muO, &offsetO, weightsO))
@@ -370,7 +370,7 @@ std::string FourierBSDF::ToString() const {
            std::string(" ]");
 }
 
-bool FourierBSDFTable::GetWeightsAndOffset(Float cosTheta, int *offset,
+bool FourierBSDFTable::GetWeightsAndOffset(Float cosTheta, Int *offset,
                                            Float weights[4]) const {
     return CatmullRomWeights(nMu, mu, cosTheta, offset, weights);
 }
@@ -534,7 +534,7 @@ Spectrum FourierBSDF::Sample_f(const Vector3f &wo, Vector3f *wi,
     // Compute Fourier coefficients $a_k$ for $(\mui, \muo)$
 
     // Determine offsets and weights for $\mui$ and $\muo$
-    int offsetI, offsetO;
+    Int offsetI, offsetO;
     Float weightsI[4], weightsO[4];
     if (!bsdfTable.GetWeightsAndOffset(muI, &offsetI, weightsI) ||
         !bsdfTable.GetWeightsAndOffset(muO, &offsetO, weightsO))
@@ -606,7 +606,7 @@ Float FourierBSDF::Pdf(const Vector3f &wo, const Vector3f &wi) const {
     Float cosPhi = CosDPhi(-wi, wo);
 
     // Compute luminance Fourier coefficients $a_k$ for $(\mui, \muo)$
-    int offsetI, offsetO;
+    Int offsetI, offsetO;
     Float weightsI[4], weightsO[4];
     if (!bsdfTable.GetWeightsAndOffset(muI, &offsetI, weightsI) ||
         !bsdfTable.GetWeightsAndOffset(muO, &offsetO, weightsO))

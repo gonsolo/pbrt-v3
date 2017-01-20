@@ -36,9 +36,9 @@
 namespace pbrt {
 
 // Spline Interpolation Definitions
-Float CatmullRom(int size, const Float *nodes, const Float *values, Float x) {
+Float CatmullRom(Int size, const Float *nodes, const Float *values, Float x) {
     if (!(x >= nodes[0] && x <= nodes[size - 1])) return 0;
-    int idx = FindInterval(size, [&](int i) { return nodes[i] <= x; });
+    Int idx = FindInterval(size, [&](Int i) { return nodes[i] <= x; });
     Float x0 = nodes[idx], x1 = nodes[idx + 1];
     Float f0 = values[idx], f1 = values[idx + 1];
     Float width = x1 - x0;
@@ -58,13 +58,13 @@ Float CatmullRom(int size, const Float *nodes, const Float *values, Float x) {
            (t3 - 2 * t2 + t) * d0 + (t3 - t2) * d1;
 }
 
-bool CatmullRomWeights(int size, const Float *nodes, Float x, int *offset,
+bool CatmullRomWeights(Int size, const Float *nodes, Float x, Int *offset,
                        Float *weights) {
     // Return _false_ if _x_ is out of bounds
     if (!(x >= nodes[0] && x <= nodes[size - 1])) return false;
 
     // Search for the interval _idx_ containing _x_
-    int idx = FindInterval(size, [&](int i) { return nodes[i] <= x; });
+    Int idx = FindInterval(size, [&](Int i) { return nodes[i] <= x; });
     *offset = idx - 1;
     Float x0 = nodes[idx], x1 = nodes[idx + 1];
 
@@ -105,7 +105,7 @@ Float SampleCatmullRom(int n, const Float *x, const Float *f, const Float *F,
                        Float u, Float *fval, Float *pdf) {
     // Map _u_ to a spline interval by inverting _F_
     u *= F[n - 1];
-    int i = FindInterval(n, [&](int i) { return F[i] <= u; });
+    Int i = FindInterval(n, [&](Int i) { return F[i] <= u; });
 
     // Look up $x_i$ and function values of spline segment _i_
     Float x0 = x[i], x1 = x[i + 1];
@@ -169,12 +169,12 @@ Float SampleCatmullRom(int n, const Float *x, const Float *f, const Float *F,
     return x0 + width * t;
 }
 
-Float SampleCatmullRom2D(int size1, int size2, const Float *nodes1,
+Float SampleCatmullRom2D(Int size1, Int size2, const Float *nodes1,
                          const Float *nodes2, const Float *values,
                          const Float *cdf, Float alpha, Float u, Float *fval,
                          Float *pdf) {
     // Determine offset and coefficients for the _alpha_ parameter
-    int offset;
+    Int offset;
     Float weights[4];
     if (!CatmullRomWeights(size1, nodes1, alpha, &offset, weights)) return 0;
 
@@ -190,8 +190,8 @@ Float SampleCatmullRom2D(int size1, int size2, const Float *nodes1,
     // Map _u_ to a spline interval by inverting the interpolated _cdf_
     Float maximum = interpolate(cdf, size2 - 1);
     u *= maximum;
-    int idx =
-        FindInterval(size2, [&](int i) { return interpolate(cdf, i) <= u; });
+    Int idx =
+        FindInterval(size2, [&](Int i) { return interpolate(cdf, i) <= u; });
 
     // Look up node positions and interpolated function values
     Float f0 = interpolate(values, idx), f1 = interpolate(values, idx + 1);
@@ -285,7 +285,7 @@ Float IntegrateCatmullRom(int n, const Float *x, const Float *values,
     return sum;
 }
 
-Float InvertCatmullRom(int n, const Float *x, const Float *values, Float u) {
+Float InvertCatmullRom(Int n, const Float *x, const Float *values, Float u) {
     // Stop when _u_ is out of bounds
     if (!(u > values[0]))
         return x[0];
@@ -293,7 +293,7 @@ Float InvertCatmullRom(int n, const Float *x, const Float *values, Float u) {
         return x[n - 1];
 
     // Map _u_ to a spline interval by inverting _values_
-    int i = FindInterval(n, [&](int i) { return values[i] <= u; });
+    Int i = FindInterval(n, [&](Int i) { return values[i] <= u; });
 
     // Look up $x_i$ and function values of spline segment _i_
     Float x0 = x[i], x1 = x[i + 1];

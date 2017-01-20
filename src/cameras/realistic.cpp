@@ -94,7 +94,7 @@ bool RealisticCamera::TraceLensesFromFilm(const Ray &rCamera, Ray *rOut) const {
     // Transform _rCamera_ from camera to lens system space
     static const Transform CameraToLens = Scale(1, 1, -1);
     Ray rLens = CameraToLens(rCamera);
-    for (int i = elementInterfaces.size() - 1; i >= 0; --i) {
+    for (Int i = elementInterfaces.size() - 1; i >= 0; --i) {
         const LensElementInterface &element = elementInterfaces[i];
         // Update ray from film accounting for interaction with _element_
         elementZ -= element.thickness;
@@ -296,7 +296,7 @@ void RealisticCamera::DrawRayPathFromFilm(const Ray &r, bool arrow,
     Ray ray = CameraToLens(r);
     printf("{ ");
     if (!TraceLensesFromFilm(r, nullptr)) printf("Dashed, ");
-    for (int i = elementInterfaces.size() - 1; i >= 0; --i) {
+    for (Int i = elementInterfaces.size() - 1; i >= 0; --i) {
         const LensElementInterface &element = elementInterfaces[i];
         elementZ -= element.thickness;
         bool isStop = (element.curvatureRadius == 0);

@@ -313,7 +313,7 @@ void SPPMIntegrator::Render(const Scene &scene) {
                 // Choose light to shoot photon from
                 Float lightPdf;
                 Float lightSample = RadicalInverse(haltonDim++, haltonIndex);
-                int lightNum =
+                Int lightNum =
                     lightDistr->SampleDiscrete(lightSample, &lightPdf);
                 const std::shared_ptr<Light> &light = scene.lights[lightNum];
 
