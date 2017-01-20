@@ -10,19 +10,19 @@ TEST(FindInterval, Basics) {
 
   // Check clamping for out of range
   EXPECT_EQ(0, FindInterval(a.size(),
-                            [&](int index) { return a[index] <= -1; }));
+                            [&](size_t index) { return a[index] <= -1; }));
   EXPECT_EQ(a.size() - 2,
             FindInterval(a.size(),
-                         [&](int index) { return a[index] <= 100; }));
+                         [&](size_t index) { return a[index] <= 100; }));
 
   for (size_t i = 0; i < a.size() - 1; ++i) {
     EXPECT_EQ(i, FindInterval(a.size(),
-                              [&](int index) { return a[index] <= i; }));
+                              [&](size_t index) { return a[index] <= i; }));
     EXPECT_EQ(i, FindInterval(a.size(),
-                              [&](int index) { return a[index] <= i + 0.5; }));
+                              [&](size_t index) { return a[index] <= i + 0.5; }));
     if (i > 0)
       EXPECT_EQ(i - 1,
                 FindInterval(a.size(),
-                             [&](int index) { return a[index] <= i - 0.5; }));
+                             [&](size_t index) { return a[index] <= i - 0.5; }));
   }
 }
