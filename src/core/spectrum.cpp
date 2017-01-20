@@ -176,7 +176,7 @@ SampledSpectrum::SampledSpectrum(const RGBSpectrum &r, SpectrumType t) {
     *this = SampledSpectrum::FromRGB(rgb, t);
 }
 
-Float InterpolateSpectrumSamples(const Float *lambda, const Float *vals, int n,
+Float InterpolateSpectrumSamples(const Float *lambda, const Float *vals, Int n,
                                  Float l) {
     for (int i = 0; i < n - 1; ++i) CHECK_GT(lambda[i + 1], lambda[i]);
     if (l <= lambda[0]) return vals[0];

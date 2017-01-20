@@ -15,10 +15,10 @@ TEST(Spectrum, Blackbody) {
     // http://www.spectralcalc.com/blackbody_calculator/blackbody.php
     // lambda, T, expected radiance
     Float v[][3] = {
-        {483, 6000, 3.1849e13},
-        {600, 6000, 2.86772e13},
-        {500, 3700, 1.59845e12},
-        {600, 4500, 7.46497e12},
+        {483.f, 6000.f, 3.1849e13f},
+        {600.f, 6000.f, 2.86772e13f},
+        {500.f, 3700.f, 1.59845e12f},
+        {600.f, 4500.f, 7.46497e12f},
     };
     int n = sizeof(v) / sizeof(v[0]);
     for (int i = 0; i < n; ++i) {
@@ -137,8 +137,8 @@ TEST(Spectrum, LinearUpsampling) {
 
 TEST(Spectrum, LinearIrregularResample) {
     // Irregularly-sampled SPD, where f(lambda) = lambda^2.
-    Float lambdaIrreg[] = {-1.5, -.5, .01, .6, 1,   2,     2.1, 3.4, 4.6,
-                           5.7,  7,   8.2, 9,  9.8, 11.11, 12,  13,  14.7};
+    Float lambdaIrreg[] = {-1.5f, -0.5f,  0.01f, 0.6f, 1.0f,  2.00f,  2.1f,  3.4f,  4.6f,
+                            5.7f,  7.f,   8.20f, 9.0f, 9.8f, 11.11f, 12.0f, 13.0f, 14.7f};
     const int nIn = sizeof(lambdaIrreg) / sizeof(lambdaIrreg[0]);
     Float valIrreg[nIn];
     for (int i = 0; i < nIn; ++i) valIrreg[i] = lambdaIrreg[i] * lambdaIrreg[i];
