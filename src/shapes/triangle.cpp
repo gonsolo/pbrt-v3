@@ -662,7 +662,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMeshShape(
     for (int i = 0; i < nvi; ++i)
         if (vi[i] >= npi) {
             Error(
-                "trianglemesh has out of-bounds vertex index %lld (%d \"P\" "
+                "trianglemesh has out of-bounds vertex index %" PRId64 " (%d \"P\" "
                 "values were given",
                 vi[i], npi);
             return std::vector<std::shared_ptr<Shape>>();
