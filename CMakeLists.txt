@@ -70,6 +70,8 @@ ENDIF()
 # Flex on macOS is the outdated version 2.5. Brew has 2.6
 IF(APPLE)
   SET(CMAKE_PREFIX_PATH "/usr/local/opt/flex/bin;/usr/local/opt/bison/bin")
+ELSEIF(MSVC)
+  SET(CMAKE_PREFIX_PATH "C:/cygwin64/bin")
 ENDIF()
 
 # Version 2.6 is needed for nounistd
