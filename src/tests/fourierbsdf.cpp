@@ -17312,7 +17312,7 @@ TEST(BSDFs, Fourier) {
 #endif  // __GNUG__
 
     FILE *f = fopen(filename, "wb");
-    ASSERT_TRUE(f);
+    ASSERT_TRUE(f != NULL);
     int sz = sizeof(fourierData);
     ASSERT_EQ(sz, fwrite(fourierData, 1, sz, f));
     ASSERT_EQ(0, fclose(f));

@@ -47,6 +47,8 @@
 #pragma warning(disable:4018)
 #pragma warning(disable:4996)
 #pragma warning(disable:4273)
+#pragma warning(disable:4267)
+
 int isatty(int fd) { return _isatty(fd); }
 #else
 #include <unistd.h>

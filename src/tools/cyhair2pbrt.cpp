@@ -227,11 +227,11 @@ bool CyHair::Load(const char *filename) {
   default_color_[1] = header.default_color[1];
   default_color_[2] = header.default_color[2];
 
-  const bool has_segments = flags_ & 0x1;
-  const bool has_points = flags_ & 0x2;
-  const bool has_thickness = flags_ & 0x4;
-  const bool has_transparency = flags_ & 0x8;
-  const bool has_color = flags_ & 0x10;
+  const bool has_segments =		(flags_ & 0x01) == 0;
+  const bool has_points =		(flags_ & 0x02) == 0;
+  const bool has_thickness =	(flags_ & 0x04) == 0;
+  const bool has_transparency =	(flags_ & 0x08) == 0;
+  const bool has_color =		(flags_ & 0x10) == 0;
 
   num_strands_ = header.num_strands;
   total_points_ = header.total_points;

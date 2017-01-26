@@ -106,7 +106,7 @@ struct LinearBVHNode {
 
 // BVHAccel Utility Functions
 inline uint32_t LeftShift3(uint32_t x) {
-    CHECK_LE(x, (1 << 10));
+    CHECK_LE(x, uint32_t(1 << 10));
     if (x == (1 << 10)) --x;
 #ifdef PBRT_HAVE_BINARY_CONSTANTS
     x = (x | (x << 16)) & 0b00000011000000000000000011111111;
