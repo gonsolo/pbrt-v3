@@ -39,7 +39,7 @@
 #include "scene.h"
 #include "stats.h"
 #include <numeric>
-#include "glog/logging.h"
+#include "logging.h"
 
 namespace pbrt {
 

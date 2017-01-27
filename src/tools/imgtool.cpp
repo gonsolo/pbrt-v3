@@ -762,7 +762,7 @@ int convert(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    google::InitGoogleLogging(argv[0]);
+    //google::InitGoogleLogging(argv[0]);
     FLAGS_stderrthreshold = 1; // Warning and above.
 
     if (argc < 2) usage();

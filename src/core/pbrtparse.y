@@ -34,6 +34,7 @@
 #include "api.h"
 #include "pbrt.h"
 #include "paramset.h"
+#include "logging.h"
 #include <stdarg.h>
 
 #ifdef PBRT_IS_MSVC

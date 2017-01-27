@@ -17,12 +17,12 @@ if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/openexr/OpenEXR")
     "by running \"git submodule update --init --recursive\"")
 endif()
 
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/glog")
-  message(FATAL_ERROR "The glog submodule directory is missing! "
-    "You probably did not clone the project with --recursive, or first checked out "
-    "pbrt before it was added. It is possible to recover by running "
-    "\"git submodule update --init --recursive\"")
-endif()
+#if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/glog")
+#  message(FATAL_ERROR "The glog submodule directory is missing! "
+#    "You probably did not clone the project with --recursive, or first checked out "
+#    "pbrt before it was added. It is possible to recover by running "
+#    "\"git submodule update --init --recursive\"")
+#endif()
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
@@ -145,12 +145,12 @@ ENDIF()
 
 SET(WITH_GFLAGS OFF CACHE BOOL "Use gflags")
 SET(BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-ADD_SUBDIRECTORY(src/ext/glog)
-SET_PROPERTY(TARGET glog PROPERTY FOLDER "dependencies")
-INCLUDE_DIRECTORIES (
-  src/ext/glog/src
-  ${CMAKE_BINARY_DIR}/src/ext/glog
-)
+#ADD_SUBDIRECTORY(src/ext/glog)
+#SET_PROPERTY(TARGET glog PROPERTY FOLDER "dependencies")
+#INCLUDE_DIRECTORIES (
+#  src/ext/glog/src
+#  ${CMAKE_BINARY_DIR}/src/ext/glog
+#)
 
 SET ( PBRT_CORE_SOURCE
   src/core/api.cpp
@@ -169,6 +169,7 @@ SET ( PBRT_CORE_SOURCE
   src/core/interpolation.cpp
   src/core/light.cpp
   src/core/lightdistrib.cpp
+  src/core/logging.cpp
   src/core/lowdiscrepancy.cpp
   src/core/material.cpp
   src/core/medium.cpp
@@ -208,6 +209,7 @@ SET ( PBRT_CORE_HEADERS
   src/core/interaction.h
   src/core/interpolation.h
   src/core/light.h
+  src/core/logging.h
   src/core/lowdiscrepancy.h
   src/core/material.h
   src/core/medium.h
@@ -254,11 +256,11 @@ FILE ( GLOB PBRT_SOURCE
 INCLUDE_DIRECTORIES ( src )
 INCLUDE_DIRECTORIES ( src/core )
 
-IF(MSVC)
-	SET(IGNORE_GLOG_WARNINGS "/IGNORE:4049 /IGNORE:4217")
-	SET(CMAKE_STATIC_LINKER_FLAGS " ${CMAKE_STATIC_LINKER_FLAGS} ${IGNORE_GLOG_WARNINGS}")
-	SET(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS} ${IGNORE_GLOG_WARNINGS}")
-ENDIF()
+#IF(MSVC)
+#	SET(IGNORE_GLOG_WARNINGS "/IGNORE:4049 /IGNORE:4217")
+#	SET(CMAKE_STATIC_LINKER_FLAGS " ${CMAKE_STATIC_LINKER_FLAGS} ${IGNORE_GLOG_WARNINGS}")
+#	SET(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS} ${IGNORE_GLOG_WARNINGS}")
+#ENDIF()
 
 ADD_LIBRARY ( pbrt STATIC
   ${PBRT_YACC_LEX_SOURCE}
@@ -291,7 +293,7 @@ TARGET_LINK_LIBRARIES ( pbrt_exe
   pbrt
   ${CMAKE_THREAD_LIBS_INIT}
   ${OPENEXR_LIBS}
-  glog
+#  glog
   )
 
 # Tools
@@ -315,14 +317,14 @@ TARGET_LINK_LIBRARIES ( bsdftest
   pbrt
   ${CMAKE_THREAD_LIBS_INIT}
   ${OPENEXR_LIBS}
-  glog
+#  glog
   )
 
 TARGET_LINK_LIBRARIES ( imgtool
   pbrt
   ${CMAKE_THREAD_LIBS_INIT}
   ${OPENEXR_LIBS}
-  glog
+#  glog
   )
 
 TARGET_LINK_LIBRARIES ( obj2pbrt
@@ -350,7 +352,7 @@ TARGET_LINK_LIBRARIES ( pbrt_test
   pbrt
   ${CMAKE_THREAD_LIBS_INIT}
   ${OPENEXR_LIBS}
-  glog
+#  glog
   )
 
 ADD_TEST ( pbrt_unit_test

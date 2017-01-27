@@ -36,7 +36,7 @@
 #include "api.h"
 #include "parser.h"
 #include "parallel.h"
-#include <glog/logging.h>
+#include "logging.h"
 
 using namespace pbrt;
 
@@ -72,7 +72,7 @@ Reformatting options:
 
 // main program
 int main(int argc, char *argv[]) {
-    google::InitGoogleLogging(argv[0]);
+//    google::InitGoogleLogging(argv[0]);
     FLAGS_stderrthreshold = 1; // Warning and above.
 
     Options options;

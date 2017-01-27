@@ -73,7 +73,7 @@
 #endif
 #include <assert.h>
 #include <string.h>
-#include <glog/logging.h>
+#include "logging.h"
 
 
 // Global Macros

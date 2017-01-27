@@ -30,10 +30,10 @@
 #include <stdio.h>
 
 #include "tests/gtest/gtest.h"
-#include <glog/logging.h>
+#include "logging.h"
 
 GTEST_API_ int main(int argc, char **argv) {
-  google::InitGoogleLogging(argv[0]);
+//  google::InitGoogleLogging(argv[0]);
   FLAGS_stderrthreshold = 1; // Warning and above.
   printf("Running main() from gtest_main.cc\n");
   testing::InitGoogleTest(&argc, argv);
