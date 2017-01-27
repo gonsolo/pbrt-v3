@@ -99,7 +99,7 @@ struct Distribution1D {
         return offset;
     }
     Float DiscretePDF(size_t index) const {
-        CHECK(index >= 0 && index < Count());
+        CHECK(index < Count());
         return func[index] / (funcInt * Count());
     }
 

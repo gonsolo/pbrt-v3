@@ -792,5 +792,7 @@ std::string BSDF::ToString() const {
     return s + std::string(" ]");
 }
 
+const int BSDF::MaxBxDFs;
+
 }  // namespace pbrt
 

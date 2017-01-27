@@ -1,29 +1,64 @@
 #pragma once
 
-// Homegrown logging
-//
-
 #include <iostream>
 
 #define LOGGING_CERR if(true) {} else std::cerr
 
-#define CHECK(a) if(!(a)) LOGGING_CERR
-#define CHECK_EQ(a, b)
-#define CHECK_GE(a, b)
-#define CHECK_GT(a, b)
-#define CHECK_LE(a, b) if(!((a) <= (b))) LOGGING_CERR
-#define CHECK_LT(a, b) if(!((a) < (b))) LOGGING_CERR
-#define CHECK_NE(a, b)
-#define CHECK_NOTNULL(a)
-#define DCHECK(a)
-#define DCHECK_LT(a,b)
-#define DCHECK_NE(a,b)
-#define FATAL
-#define LOG(a) LOGGING_CERR
-#define VLOG(a) LOGGING_CERR
+class DoNothing {};
+static DoNothing doNothing;
 
-extern bool FLAGS_logtostderr;
-extern int FLAGS_minloglevel;
-extern int FLAGS_stderrthreshold;
-extern int FLAGS_v;
+template<typename T>
+DoNothing CHECK(const T& t) { return doNothing; }
+
+template<typename T>
+DoNothing CHECK_NOTNULL(const T& t) { return doNothing; }
+
+template<typename T>
+DoNothing DCHECK(const T& t) { return doNothing; }
+
+template<typename T>
+DoNothing LOG(const T& t) { return doNothing; }
+
+template<typename T>
+DoNothing VLOG(const T& t) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing CHECK_EQ(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing CHECK_GE(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing CHECK_GT(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing CHECK_LE(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing CHECK_LT(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing CHECK_NE(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing DCHECK_LT(const T& a, const U& b) { return doNothing; }
+
+template<typename T, typename U>
+DoNothing DCHECK_NE(const T& a, const U& b) { return doNothing; }
+
+
+template<typename T>
+inline DoNothing operator<<(DoNothing dn, T value) { return dn; }
+
+
+extern bool  FLAGS_logtostderr;
+extern int   FLAGS_minloglevel;
+extern int   FLAGS_stderrthreshold;
+extern int   FLAGS_v;
 extern char* FLAGS_log_dir;
+
+const int INFO    = 0;
+const int WARNING = 1;
+const int ERROR   = 2;
+const int FATAL   = 3;
+
