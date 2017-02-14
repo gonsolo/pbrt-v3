@@ -283,6 +283,7 @@ FIND_PACKAGE ( Threads )
 ADD_EXECUTABLE ( pbrt_exe
   src/main/pbrt.cpp
   )
+SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT pbrt_exe)
 
 SET_TARGET_PROPERTIES ( pbrt_exe
   PROPERTIES
@@ -376,3 +377,5 @@ INSTALL ( TARGETS
   DESTINATION
   lib
   )
+
+ 

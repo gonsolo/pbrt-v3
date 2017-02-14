@@ -68,9 +68,12 @@ class Sphere : public Shape {
     Float Pdf(const Interaction &ref, const Vector3f &wi) const;
     Float SolidAngle(const Point3f &p, int nSamples) const;
 
+public:
+	// Temporary public
+    const Float radius;
+
   private:
     // Sphere Private Data
-    const Float radius;
     const Float zMin, zMax;
     const Float thetaMin, thetaMax, phiMax;
 };

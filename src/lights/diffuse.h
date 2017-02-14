@@ -66,10 +66,12 @@ class DiffuseAreaLight : public AreaLight {
     void Pdf_Le(const Ray &, const Normal3f &, Float *pdfPos,
                 Float *pdfDir) const;
 
+public:
+    std::shared_ptr<Shape> shape;
+
   protected:
     // DiffuseAreaLight Protected Data
     const Spectrum Lemit;
-    std::shared_ptr<Shape> shape;
     // Added after book publication: by default, DiffuseAreaLights still
     // only emit in the hemimsphere around the surface normal.  However,
     // this behavior can now be overridden to give emission on both sides.

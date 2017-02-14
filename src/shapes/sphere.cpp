@@ -285,7 +285,7 @@ Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
     it.n = Normal3f(nWorld);
     if (reverseOrientation) it.n *= -1;
 
-    // Uniform cone PDF.
+    // Uniform sphere PDF.
     *pdf = 1 / (2 * Pi * (1 - cosThetaMax));
 
     return it;

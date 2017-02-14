@@ -37,6 +37,10 @@
 #include "shapes/triangle.h"
 #include "stats.h"
 
+#include <typeinfo>
+#include "shapes/sphere.h"
+
+
 namespace pbrt {
 
 // DiffuseAreaLight Method Definitions
