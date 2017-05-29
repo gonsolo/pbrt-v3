@@ -121,10 +121,11 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
     Float lightPdf = 0, scatteringPdf = 0;
     VisibilityTester visibility;
 
-	if (false) {
+	const Light* lightPointer = &light;
+	const DiffuseAreaLight* dal = dynamic_cast<const DiffuseAreaLight*>(lightPointer);
 
-		const Light* lightPointer = &light;
-		const DiffuseAreaLight* dal = dynamic_cast<const DiffuseAreaLight*>(lightPointer);
+	if (dal->analytical) {
+
 		auto shape = dal->shape;
 		const std::type_info& info = typeid(*shape);
 		//std::cout << info.name() << std::endl;
@@ -146,8 +147,8 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
 		Float F = R*R / std::pow((1.0 + D*D + H*H), 1.5);
 		//std::cout << "F: " << F << std::endl;
 
-		Spectrum L(0.5);
-		return 5 * L * F;
+		//Spectrum L(0.5);
+		return 5 * dal->Lemit * F;
 		//return Spectrum(1.f);
 	}
 

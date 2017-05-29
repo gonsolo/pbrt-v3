@@ -48,11 +48,12 @@ DiffuseAreaLight::DiffuseAreaLight(const Transform &LightToWorld,
                                    const MediumInterface &mediumInterface,
                                    const Spectrum &Lemit, int nSamples,
                                    const std::shared_ptr<Shape> &shape,
-                                   bool twoSided)
+                                   bool twoSided, bool analytical)
     : AreaLight(LightToWorld, mediumInterface, nSamples),
       Lemit(Lemit),
       shape(shape),
       twoSided(twoSided),
+      analytical(analytical),
       area(shape->Area()) {
     // Warn if light has transformation with non-uniform scale, though not
     // for Triangles, since this doesn't matter for them.
@@ -144,9 +145,10 @@ std::shared_ptr<AreaLight> CreateDiffuseAreaLight(
     int nSamples = paramSet.FindOneInt("samples",
                                        paramSet.FindOneInt("nsamples", 1));
     bool twoSided = paramSet.FindOneBool("twosided", false);
+	bool analytical = paramSet.FindOneBool("analytical", false);
     if (PbrtOptions.quickRender) nSamples = std::max(1, nSamples / 4);
     return std::make_shared<DiffuseAreaLight>(light2world, medium, L * sc,
-                                              nSamples, shape, twoSided);
+                                              nSamples, shape, twoSided, analytical);
 }
 
 }  // namespace pbrt

@@ -47,12 +47,12 @@ namespace pbrt {
 
 // DiffuseAreaLight Declarations
 class DiffuseAreaLight : public AreaLight {
-  public:
+public:
     // DiffuseAreaLight Public Methods
     DiffuseAreaLight(const Transform &LightToWorld,
                      const MediumInterface &mediumInterface, const Spectrum &Le,
                      int nSamples, const std::shared_ptr<Shape> &shape,
-                     bool twoSided = false);
+                     bool twoSided = false, bool analytical = false);
     Spectrum L(const Interaction &intr, const Vector3f &w) const {
         return (twoSided || Dot(intr.n, w) > 0) ? Lemit : Spectrum(0.f);
     }
@@ -70,13 +70,15 @@ public:
     std::shared_ptr<Shape> shape;
 
   protected:
-    // DiffuseAreaLight Protected Data
-    const Spectrum Lemit;
     // Added after book publication: by default, DiffuseAreaLights still
     // only emit in the hemimsphere around the surface normal.  However,
     // this behavior can now be overridden to give emission on both sides.
     const bool twoSided;
     const Float area;
+
+public:
+    const Spectrum Lemit;
+	const bool analytical;
 };
 
 std::shared_ptr<AreaLight> CreateDiffuseAreaLight(
