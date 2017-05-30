@@ -231,6 +231,11 @@ Interaction Sphere::Sample(const Point2f &u, Float *pdf) const {
 
 Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
                            Float *pdf) const {
+
+
+	// Gonzo hack
+//	return Sample(u, pdf);
+
     Point3f pCenter = (*ObjectToWorld)(Point3f(0, 0, 0));
 
     // Sample uniformly on sphere if $\pt{}$ is inside it

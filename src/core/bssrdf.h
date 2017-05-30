@@ -162,6 +162,12 @@ class SeparableBSSRDFAdapter : public BxDF {
             f *= bssrdf->eta * bssrdf->eta;
         return f;
     }
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+		// TODO: Unimplemented
+		Error("f_analytical not implemented for this BxDF!");
+        return Spectrum(0.f);
+	}
+
     std::string ToString() const { return "[ SeparableBSSRDFAdapter ]"; }
 
   private:

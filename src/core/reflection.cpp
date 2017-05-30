@@ -179,6 +179,12 @@ Spectrum LambertianReflection::f(const Vector3f &wo, const Vector3f &wi) const {
     return R * InvPi;
 }
 
+Spectrum LambertianReflection::f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	//return 2 * R * phi;
+	//return R * phi;
+	return R * Pi;
+}
+
 std::string LambertianReflection::ToString() const {
     return std::string("[ LambertianReflection R: ") + R.ToString() +
            std::string(" ]");
@@ -680,6 +686,22 @@ Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
             ((reflect && (bxdfs[i]->type & BSDF_REFLECTION)) ||
              (!reflect && (bxdfs[i]->type & BSDF_TRANSMISSION))))
             f += bxdfs[i]->f(wo, wi);
+    return f;
+}
+
+Spectrum BSDF::f_analytical(const Vector3f& woW, const Vector3f& wiW,
+	float phi, BxDFType flags) const {
+
+    ProfilePhase pp(Prof::BSDFEvaluation);
+    Vector3f wi = WorldToLocal(wiW), wo = WorldToLocal(woW);
+    if (wo.z == 0) return 0.;
+    bool reflect = Dot(wiW, ng) * Dot(woW, ng) > 0;
+    Spectrum f(0.f);
+    for (int i = 0; i < nBxDFs; ++i)
+        if (bxdfs[i]->MatchesFlags(flags) &&
+            ((reflect && (bxdfs[i]->type & BSDF_REFLECTION)) ||
+             (!reflect && (bxdfs[i]->type & BSDF_TRANSMISSION))))
+            f += bxdfs[i]->f_analytical(wo, wi, phi);
     return f;
 }
 

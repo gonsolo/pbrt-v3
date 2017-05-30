@@ -97,6 +97,12 @@ class HairBSDF : public BxDF {
     HairBSDF(Float h, Float eta, const Spectrum &sigma_a, Float beta_m,
              Float beta_n, Float alpha);
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+		// TODO: Unimplemented
+		Error("f_analytical not implemented for this BxDF!");
+        return Spectrum(0.f);
+	}
+
     Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
                       Float *pdf, BxDFType *sampledType) const;
     Float Pdf(const Vector3f &wo, const Vector3f &wi) const;

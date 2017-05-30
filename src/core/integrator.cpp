@@ -109,6 +109,80 @@ Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene,
 }
 
 
+Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction& it, BxDFType bsdfFlags) {
+
+	Spectrum Ld;
+	auto shape = dal->shape;
+	const std::type_info& info = typeid(*shape);
+	//std::cout << info.name() << std::endl;
+	Shape* tmp = shape.get();
+	Sphere* sphere = dynamic_cast<Sphere*>(tmp);
+	Point3f sphereCenter = (*sphere->ObjectToWorld)(Point3f(0, 0, 0));
+	//std::cout << "Center: " << sphereCenter << std::endl;
+	//std::cout << "Intersection point: " << ref.p << std::endl;
+	//std::cout << "Intersection normal: " << ref.n << std::endl;
+
+	Float radius = sphere->radius;
+	//Float l = sphereCenter.x - it.p.x;
+	//Float h = sphereCenter.y - it.p.y;
+	//Float d = sphereCenter.z - it.p.z;
+	//std::cout << "r, l, h, d: " << r << ' ' << l << ' ' << h << ' ' << d << std::endl;
+	//Float H = h / l;
+	//Float R = r / l;
+	//Float D = d / l;
+	//Float F = R*R / std::pow((1.0 + D*D + H*H), 1.5);
+	//std::cout << "F: " << F << std::endl;
+
+	auto Lemit = dal->Lemit;
+
+	// Incoming vector
+	//Vector3f wiUnnormalized = Vector3f(l, h, d);
+	//Vector3f wi = Normalize(wiUnnormalized);
+	//float distance = wiUnnormalized.Length();
+	//float distance2 = distance * distance;
+
+	//float RoverD = r / distance;
+	//float RoverD2 = RoverD * RoverD;
+	//float ir = sqrt(1.f - RoverD2);
+	//float bl = 1.f - ir;
+	//const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
+	//float cosine = AbsDot(wi, isect.shading.n);
+	//float blcos = cosine * RoverD2;
+
+	//float area = 4.f * Pi * r * r;
+
+	// Sphere as point approximation
+	// I (point light) = Pi * Lemit (sphere)
+	auto Li = Lemit * Pi  * radius*radius / DistanceSquared(sphereCenter, it.p);
+
+	return Li;
+
+
+	// Angle of light as seen from the point of interaction
+	//float phi = asin(r / wiUnnormalized.Length());
+
+	//float wiLength = wiUnnormalized.Length();
+	//float blocking = cos(phi) * sqrt(r / wiLength);
+	//Spectrum arriving = dal->Lemit * blocking;
+
+	// Outgoing vector
+	//Vector3f wo = isect.wo;
+
+	// Evaluate BSDF by integrating phi over the incoming angle wi
+	//Spectrum f = isect.bsdf->f_analytical(wo, wi, phi, bsdfFlags);
+//	float cosine = AbsDot(wi, isect.shading.n);
+	//f *= cosine;
+
+	// TODO: Check visibility of light
+
+	//if (!f.IsBlack()) {
+	//	Ld += f * Li;
+	//}
+	//float hack = Pi;
+	//Ld /= hack;
+	//return Ld;
+}
+
 Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
                         const Light &light, const Point2f &uLight,
                         const Scene &scene, Sampler &sampler,
@@ -124,35 +198,13 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
 	const Light* lightPointer = &light;
 	const DiffuseAreaLight* dal = dynamic_cast<const DiffuseAreaLight*>(lightPointer);
 
-	if (dal->analytical) {
-
-		auto shape = dal->shape;
-		const std::type_info& info = typeid(*shape);
-		//std::cout << info.name() << std::endl;
-		Shape* tmp = shape.get();
-		Sphere* sphere = dynamic_cast<Sphere*>(tmp);
-		Point3f sphereCenter = (*sphere->ObjectToWorld)(Point3f(0, 0, 0));
-		//std::cout << "Center: " << sphereCenter << std::endl;
-		//std::cout << "Intersection point: " << ref.p << std::endl;
-		//std::cout << "Intersection normal: " << ref.n << std::endl;
-
-		Float r = sphere->radius;
-		Float l = sphereCenter.x - it.p.x;
-		Float h = sphereCenter.y - it.p.y;
-		Float d = sphereCenter.z - it.p.z;
-		//std::cout << "r, l, h, d: " << r << ' ' << l << ' ' << h << ' ' << d << std::endl;
-		Float H = h / l;
-		Float R = r / l;
-		Float D = d / l;
-		Float F = R*R / std::pow((1.0 + D*D + H*H), 1.5);
-		//std::cout << "F: " << F << std::endl;
-
-		//Spectrum L(0.5);
-		return 5 * dal->Lemit * F;
-		//return Spectrum(1.f);
+	if (dal && dal->analytical) {
+		return EstimateDirectAnalytical(dal, it, bsdfFlags);
 	}
 
     Spectrum Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
+	//return Li / lightPdf;
+
     VLOG(2) << "EstimateDirect uLight:" << uLight << " -> Li: " << Li << ", wi: "
             << wi << ", pdf: " << lightPdf;
     if (lightPdf > 0 && !Li.IsBlack()) {
@@ -198,7 +250,7 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
             }
         }
     }
-
+	
     // Sample BSDF with multiple importance sampling
     if (!IsDeltaLight(light.flags)) {
         Spectrum f;
