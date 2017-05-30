@@ -145,7 +145,6 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 	//float RoverD2 = RoverD * RoverD;
 	//float ir = sqrt(1.f - RoverD2);
 	//float bl = 1.f - ir;
-	//const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
 	//float cosine = AbsDot(wi, isect.shading.n);
 	//float blcos = cosine * RoverD2;
 
@@ -153,9 +152,10 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 
 	// Sphere as point approximation
 	// I (point light) = Pi * Lemit (sphere)
+	// Sphere with radius
 	auto Li = Lemit * Pi  * radius*radius / DistanceSquared(sphereCenter, it.p);
 
-	return Li;
+	//return Li;
 
 
 	// Angle of light as seen from the point of interaction
@@ -169,18 +169,20 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 	//Vector3f wo = isect.wo;
 
 	// Evaluate BSDF by integrating phi over the incoming angle wi
-	//Spectrum f = isect.bsdf->f_analytical(wo, wi, phi, bsdfFlags);
-//	float cosine = AbsDot(wi, isect.shading.n);
-	//f *= cosine;
+	const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
+    Vector3f wi = Normalize(sphereCenter - it.p);
+	Spectrum f = isect.bsdf->f(isect.wo, wi, bsdfFlags);
+	float cosine = AbsDot(wi, isect.shading.n);
+	f *= cosine;
 
 	// TODO: Check visibility of light
 
-	//if (!f.IsBlack()) {
-	//	Ld += f * Li;
-	//}
+	if (!f.IsBlack()) {
+		Ld += f * Li;
+	}
 	//float hack = Pi;
 	//Ld /= hack;
-	//return Ld;
+	return Ld;
 }
 
 Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
