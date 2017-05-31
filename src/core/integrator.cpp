@@ -155,11 +155,8 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 	// Sphere with radius
 	auto Li = Lemit * Pi  * radius*radius / DistanceSquared(sphereCenter, it.p);
 
+	// Only incoming light
 	//return Li;
-
-
-	// Angle of light as seen from the point of interaction
-	//float phi = asin(r / wiUnnormalized.Length());
 
 	//float wiLength = wiUnnormalized.Length();
 	//float blocking = cos(phi) * sqrt(r / wiLength);
@@ -170,8 +167,16 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 
 	// Evaluate BSDF by integrating phi over the incoming angle wi
 	const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-    Vector3f wi = Normalize(sphereCenter - it.p);
+	Vector3f wiu = sphereCenter - it.p;
+    Vector3f wi = Normalize(wiu);
 	Spectrum f = isect.bsdf->f(isect.wo, wi, bsdfFlags);
+
+	// Angle of light as seen from the point of interaction
+	float phi = asin(radius / wiu.Length());
+
+	float intcos = 2.f * Pi * sin(phi);
+
+
 	float cosine = AbsDot(wi, isect.shading.n);
 	f *= cosine;
 
