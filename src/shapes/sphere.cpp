@@ -233,15 +233,13 @@ Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
                            Float *pdf) const {
 
 
-	// Gonzo hack
-//	return Sample(u, pdf);
-
     Point3f pCenter = (*ObjectToWorld)(Point3f(0, 0, 0));
 
     // Sample uniformly on sphere if $\pt{}$ is inside it
     Point3f pOrigin =
         OffsetRayOrigin(ref.p, ref.pError, ref.n, pCenter - ref.p);
-    if (DistanceSquared(pOrigin, pCenter) <= radius * radius) {
+    //if (true) {
+	if (DistanceSquared(pOrigin, pCenter) <= radius * radius) {
         Interaction intr = Sample(u, pdf);
         Vector3f wi = intr.p - ref.p;
         if (wi.LengthSquared() == 0)
@@ -290,7 +288,7 @@ Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
     it.n = Normal3f(nWorld);
     if (reverseOrientation) it.n *= -1;
 
-    // Uniform sphere PDF.
+    // Uniform cone PDF.
     *pdf = 1 / (2 * Pi * (1 - cosThetaMax));
 
     return it;
@@ -307,6 +305,7 @@ Float Sphere::Pdf(const Interaction &ref, const Vector3f &wi) const {
     // Compute general sphere PDF
     Float sinThetaMax2 = radius * radius / DistanceSquared(ref.p, pCenter);
     Float cosThetaMax = std::sqrt(std::max((Float)0, 1 - sinThetaMax2));
+
     return UniformConePdf(cosThetaMax);
 }
 

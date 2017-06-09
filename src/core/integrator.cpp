@@ -30,6 +30,7 @@
 
  */
 
+#include <algorithm>
 // core/integrator.cpp*
 #include "integrator.h"
 #include "scene.h"
@@ -153,7 +154,17 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 	// Sphere as point approximation
 	// I (point light) = Pi * Lemit (sphere)
 	// Sphere with radius
-	auto Li = Lemit * Pi  * radius*radius / DistanceSquared(sphereCenter, it.p);
+	//auto Li = Lemit * Pi  * radius*radius / DistanceSquared(sphereCenter, it.p);
+
+	//auto Li = Lemit * Pi * radius*radius / DistanceSquared(sphereCenter, it.p);
+
+	// Uniform cone sampling from PBRT always gives a noise free image since
+	// the computation is independent from distance and angle of the sample
+	// point. This is because we don't have to convert from area measure to
+	// solid angle measure.
+	Float sinTheta2 = radius*radius / DistanceSquared(sphereCenter, it.p);
+	Float cosTheta = std::max(0.f, std::sqrt(1.f - sinTheta2));
+	Spectrum Li = Lemit * 2 * Pi * (1 - cosTheta);
 
 	// Only incoming light
 	//return Li;
@@ -165,20 +176,22 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 	// Outgoing vector
 	//Vector3f wo = isect.wo;
 
-	// Evaluate BSDF by integrating phi over the incoming angle wi
+	// Matte with Lambert
 	const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
 	Vector3f wiu = sphereCenter - it.p;
     Vector3f wi = Normalize(wiu);
+	float cosine = AbsDot(wi, isect.shading.n);
+	// Evaluate BSDF by integrating phi over the incoming angle wi
 	Spectrum f = isect.bsdf->f(isect.wo, wi, bsdfFlags);
+	Float sinTheta = sqrt(sinTheta2);
+	f = f * cosine * 2 * Pi * sinTheta;
+	//f *= cosine;
 
 	// Angle of light as seen from the point of interaction
-	float phi = asin(radius / wiu.Length());
+	//float phi = asin(radius / wiu.Length());
+	//float intcos = 2.f * Pi * sin(phi);
 
-	float intcos = 2.f * Pi * sin(phi);
 
-
-	float cosine = AbsDot(wi, isect.shading.n);
-	f *= cosine;
 
 	// TODO: Check visibility of light
 
@@ -210,6 +223,8 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
 	}
 
     Spectrum Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
+
+	// Return only incoming light
 	//return Li / lightPdf;
 
     VLOG(2) << "EstimateDirect uLight:" << uLight << " -> Li: " << Li << ", wi: "
