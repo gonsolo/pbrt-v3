@@ -93,7 +93,7 @@ Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene,
     // Randomly choose a single light to sample, _light_
     int nLights = int(scene.lights.size());
     if (nLights == 0) return Spectrum(0.f);
-    size_t lightNum;
+	size_t lightNum;
     Float lightPdf;
     if (lightDistrib) {
         lightNum = lightDistrib->SampleDiscrete(sampler.Get1D(), &lightPdf);
@@ -162,29 +162,46 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 	// the computation is independent from distance and angle of the sample
 	// point. This is because we don't have to convert from area measure to
 	// solid angle measure.
-	Float sinTheta2 = radius*radius / DistanceSquared(sphereCenter, it.p);
-	Float cosTheta = std::max(0.f, std::sqrt(1.f - sinTheta2));
-	Spectrum Li = Lemit * 2 * Pi * (1 - cosTheta);
-
-	// Only incoming light
-	//return Li;
-
-	//float wiLength = wiUnnormalized.Length();
-	//float blocking = cos(phi) * sqrt(r / wiLength);
-	//Spectrum arriving = dal->Lemit * blocking;
-
-	// Outgoing vector
-	//Vector3f wo = isect.wo;
-
-	// Matte with Lambert
+	Float radiusSquared = radius * radius;
+	Float distanceSquared = DistanceSquared(sphereCenter, it.p);
+	Float sinThetaLight2 = radiusSquared / distanceSquared;
+	Float cosThetaLight = std::max(0.f, std::sqrt(1.f - sinThetaLight2));
+	Spectrum Li = Lemit * 2 * Pi * (1 - cosThetaLight);
+	return Li; // Only incoming light
+#if 0
 	const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
+	Normal3f n = isect.shading.n;
 	Vector3f wiu = sphereCenter - it.p;
     Vector3f wi = Normalize(wiu);
-	float cosine = AbsDot(wi, isect.shading.n);
+	Float cosThetaNormal = Dot(n, wi);
+
+	Float areaSphere = Pi * radiusSquared / distanceSquared;
+	Float areaSphereProjected = areaSphere / cosThetaNormal;
+	Float irradiance = areaSphereProjected / Pi;
+	Spectrum LiProjected = Lemit * irradiance;
+
+	// Lambert
+	Float InvPi = 1.0 / Pi;
+	Spectrum R(0.5);
+	Spectrum f = R * InvPi;
+	Ld = LiProjected * f;
+	return Ld;
+	
+	float cosine = Dot(wi, isect.shading.n);
+	Spectrum C;
+	if (cosine < 0.f) {
+		float rgb[]{ 1.f, 0.f, 0.f };
+		C = -cosine;
+	}
+	else {
+		C = 0.f;
+	}
+	return C;
+#endif
 	// Evaluate BSDF by integrating phi over the incoming angle wi
-	Spectrum f = isect.bsdf->f(isect.wo, wi, bsdfFlags);
-	Float sinTheta = sqrt(sinTheta2);
-	f = f * cosine * 2 * Pi * sinTheta;
+	//Spectrum f = isect.bsdf->f(isect.wo, wi, bsdfFlags);
+	//Float sinTheta = sqrt(sinTheta2);
+	//f = f * cosine * 2 * Pi * sinTheta;
 	//f *= cosine;
 
 	// Angle of light as seen from the point of interaction
@@ -195,12 +212,12 @@ Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction
 
 	// TODO: Check visibility of light
 
-	if (!f.IsBlack()) {
-		Ld += f * Li;
-	}
+	//if (!f.IsBlack()) {
+	//	Ld += f * Li;
+	//}
 	//float hack = Pi;
 	//Ld /= hack;
-	return Ld;
+	//return Ld;
 }
 
 Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
@@ -237,6 +254,22 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
             const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
             f = isect.bsdf->f(isect.wo, wi, bsdfFlags) *
                 AbsDot(wi, isect.shading.n);
+			
+			// gonzo
+			Float cosine = AbsDot(wi, isect.shading.n);
+			//float cosine = Dot(wi, isect.shading.n);
+			//Spectrum C;
+			//if (cosine < 0.f) {
+			//	float rgb[]{ 1.f, 0.f, 0.f };
+			//	C = -cosine;
+			//}
+			//else {
+			//	C = 0.f;
+			//}
+			//return C;
+
+
+
             scatteringPdf = isect.bsdf->Pdf(isect.wo, wi, bsdfFlags);
             VLOG(2) << "  surf f*dot :" << f << ", scatteringPdf: " << scatteringPdf;
         } else {
