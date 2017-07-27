@@ -476,12 +476,6 @@ FILE ( GLOB PBRT_SOURCE
 INCLUDE_DIRECTORIES ( src )
 INCLUDE_DIRECTORIES ( src/core )
 
-#IF(MSVC)
-#	SET(IGNORE_GLOG_WARNINGS "/IGNORE:4049 /IGNORE:4217")
-#	SET(CMAKE_STATIC_LINKER_FLAGS " ${CMAKE_STATIC_LINKER_FLAGS} ${IGNORE_GLOG_WARNINGS}")
-#	SET(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS} ${IGNORE_GLOG_WARNINGS}")
-#ENDIF()
-
 ###########################################################################
 # pbrt libraries and executables
 
@@ -510,37 +504,6 @@ IF (WIN32)
   # Avoid a name clash when building on Visual Studio
   SET_TARGET_PROPERTIES ( pbrt PROPERTIES OUTPUT_NAME libpbrt )
 ENDIF()
-
-# Gonzo HEAD
-#FIND_PACKAGE ( Threads )
-
-# Main renderer
-#ADD_EXECUTABLE ( pbrt_exe
-#  src/main/pbrt.cpp
-#  )
-#SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT pbrt_exe)
-
-#SET_TARGET_PROPERTIES ( pbrt_exe
-#  PROPERTIES
-#  OUTPUT_NAME pbrt
-#  )
-
-#TARGET_LINK_LIBRARIES ( pbrt_exe
-#  pbrt
-#  ${CMAKE_THREAD_LIBS_INIT}
-#  ${OPENEXR_LIBS}
-##  glog
-#  )
-
-# Tools
-#ADD_EXECUTABLE ( bsdftest
-#  src/tools/bsdftest.cpp
-#  )
-
-#ADD_EXECUTABLE ( imgtool
-#  src/tools/imgtool.cpp
-#  )
-# End Gonzo Head
 
 SET(ALL_PBRT_LIBS
   pbrt
