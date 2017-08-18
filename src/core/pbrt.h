@@ -39,20 +39,19 @@
 #define PBRT_CORE_PBRT_H
 
 // core/pbrt.h*
-#include "port.h"
 
 // Platform-specific definitions
-#if defined(PBRT_IS_MSVC)
-#pragma warning(disable : 4305) // double constant assigned to float
-#pragma warning(disable : 4244) // int -> float conversion
-#pragma warning(disable : 4843) // double -> float conversion
-#pragma warning(disable : 4005) // macro redefinition in Windows system files
-#pragma warning(disable : 4244)	// truncation in type_traits
+// gonzo #if defined(PBRT_IS_MSVC)
+// gonzo #pragma warning(disable : 4305) // double constant assigned to float
+// gonzo #pragma warning(disable : 4244) // int -> float conversion
+// gonzo #pragma warning(disable : 4843) // double -> float conversion
+// gonzo #pragma warning(disable : 4005) // macro redefinition in Windows system files
+// gonzo #pragma warning(disable : 4244)	// truncation in type_traits
 
-#include <float.h>
-#include <intrin.h>
-#endif
-#include <stdint.h>
+// gonzo #include <float.h>
+// gonzo #include <intrin.h>
+// gonzo #endif
+// gonzo #include <stdint.h>
 
 // Global Include Files
 #include <type_traits>
@@ -75,6 +74,30 @@
 #include <string.h>
 #include "logging.h"
 
+// Platform-specific definitions
+#if defined(_WIN32) || defined(_WIN64)
+  #define PBRT_IS_WINDOWS
+#endif
+
+#if defined(_MSC_VER)
+  #define PBRT_IS_MSVC
+  #if _MSC_VER == 1800
+    #define snprintf _snprintf
+  #endif
+#endif
+
+#ifndef PBRT_L1_CACHE_LINE_SIZE
+  #define PBRT_L1_CACHE_LINE_SIZE 64
+#endif
+
+#include <stdint.h>
+#if defined(PBRT_IS_MSVC)
+#include <float.h>
+#include <intrin.h>
+#pragma warning(disable : 4305)  // double constant assigned to float
+#pragma warning(disable : 4244)  // int -> float conversion
+#pragma warning(disable : 4843)  // double -> float conversion
+#endif
 
 // Global Macros
 #define ALLOCA(TYPE, COUNT) (TYPE *) alloca((COUNT) * sizeof(TYPE))
@@ -328,9 +351,16 @@ inline int Log2Int(int32_t v) { return Log2Int((uint32_t)v); }
 inline int Log2Int(uint64_t v) {
 #if defined(PBRT_IS_MSVC)
     unsigned long lz = 0;
-    if (_BitScanReverse64(&lz, v)) return lz;
-    return 0;
+#if defined(_WIN64)
+    _BitScanReverse64(&lz, v);
 #else
+    if  (_BitScanReverse(&lz, v >> 32))
+        lz += 32;
+    else
+        _BitScanReverse(&lz, v & 0xffffffff);
+#endif // _WIN64
+    return lz;
+#else  // PBRT_IS_MSVC
     return 63 - __builtin_clzll(v);
 #endif
 }
