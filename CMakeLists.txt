@@ -531,7 +531,6 @@ ADD_EXECUTABLE ( imgtool src/tools/imgtool.cpp )
 ADD_SANITIZERS ( imgtool )
 TARGET_COMPILE_FEATURES ( imgtool PRIVATE ${PBRT_CXX11_FEATURES} )
 TARGET_LINK_LIBRARIES ( imgtool ${ALL_PBRT_LIBS} )
->>>>>>> 3d6f3ddf4742b4da836191826b58929a76bd99fe
 
 ADD_EXECUTABLE ( obj2pbrt src/tools/obj2pbrt.cpp )
 ADD_SANITIZERS ( obj2pbrt )
