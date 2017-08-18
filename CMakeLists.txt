@@ -509,7 +509,6 @@ SET(ALL_PBRT_LIBS
   pbrt
   ${CMAKE_THREAD_LIBS_INIT}
   ${OPENEXR_LIBS}
-# Gonzo  glog
   Ptex_static
   ${ZLIB_LIBRARY}
 )
@@ -551,16 +550,6 @@ ADD_SANITIZERS ( pbrt_test )
 TARGET_COMPILE_FEATURES ( pbrt_test PRIVATE ${PBRT_CXX11_FEATURES} )
 TARGET_LINK_LIBRARIES ( pbrt_test ${ALL_PBRT_LIBS} )
 
-# Gonzo HEAD TARGET_LINK_LIBRARIES ( pbrt_test
-# pbrt
-#  ${CMAKE_THREAD_LIBS_INIT}
-#  ${OPENEXR_LIBS}
-##  glog
-#  )
-
-#ADD_TEST ( pbrt_unit_test
-#  pbrt_test
-#  )
 ADD_TEST ( pbrt_unit_test pbrt_test )
 
 # Installation

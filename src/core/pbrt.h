@@ -41,17 +41,17 @@
 // core/pbrt.h*
 
 // Platform-specific definitions
-#if defined(PBRT_IS_MSVC)
-#pragma warning(disable : 4305) // double constant assigned to float
-#pragma warning(disable : 4244) // int -> float conversion
-#pragma warning(disable : 4843) // double -> float conversion
-#pragma warning(disable : 4005) // macro redefinition in Windows system files
-#pragma warning(disable : 4244)	// truncation in type_traits
+// gonzo #if defined(PBRT_IS_MSVC)
+// gonzo #pragma warning(disable : 4305) // double constant assigned to float
+// gonzo #pragma warning(disable : 4244) // int -> float conversion
+// gonzo #pragma warning(disable : 4843) // double -> float conversion
+// gonzo #pragma warning(disable : 4005) // macro redefinition in Windows system files
+// gonzo #pragma warning(disable : 4244)	// truncation in type_traits
 
-#include <float.h>
-#include <intrin.h>
-#endif
-#include <stdint.h>
+// gonzo #include <float.h>
+// gonzo #include <intrin.h>
+// gonzo #endif
+// gonzo #include <stdint.h>
 
 // Global Include Files
 #include <type_traits>
