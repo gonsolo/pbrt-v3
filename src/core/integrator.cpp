@@ -420,7 +420,11 @@ namespace pbrt {
 
 	static bool verbose = true;
 
-	Spectrum EstimateDirectAnalytical(const DiffuseAreaLight* dal, const Interaction& it, BxDFType bsdfFlags) {
+	Spectrum EstimateIncomingAnalytical(const DiffuseAreaLight* dal,
+			const Interaction& it,
+			BxDFType bsdfFlags,
+			Float* pdf,
+			VisibilityTester* vis) {
 
 		Spectrum Ld;
 		auto shape = dal->shape;
@@ -477,47 +481,13 @@ namespace pbrt {
 		Float sinThetaLight2 = radiusSquared / distanceSquared;
 		Float cosThetaLight = std::max(0.f, std::sqrt(1.f - sinThetaLight2));
 		Spectrum Li = Lemit * 2 * Pi * (1 - cosThetaLight);
-		//return Li; // Only incoming light
-
-
-#if 1
-		const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-		Normal3f n = isect.shading.n;
-
-		Vector3f wiu = sphereCenter - it.p;
-		Vector3f wi = Normalize(wiu);
-		Float cosThetaNormal = Dot(n, wi);
-		if (cosThetaNormal <= 0) {
-			return Ld;
-		}
-
-		Float ThetaLight = std::acos(cosThetaLight);
-		Float ThetaNormal = std::acos(cosThetaNormal);
-		Float HoldHere = 0.f;
-
-		// Lambert
-		Float InvPi = 1.0 / Pi;
-		Spectrum R(0.5);
-
-		Float alpha = std::acos(cosThetaNormal);
-		Float theta = std::acos(cosThetaLight);
-		Spectrum f = R * cos(alpha) * square(sin(theta)) / (2 * Pi * (1 - cos(theta)));
-		Ld = f * Li;
-
-		if (verbose) {
-			std::cout << "Analytical: " << std::endl;
-			std::cout << "n, wi: " << n << " " << wi << std::endl;
-			std::cout << "alpha: " << alpha << std::endl;
-			std::cout << "theta: " << theta << std::endl;
-			std::cout << "Li: " << Li << std::endl;
-			std::cout << "f:  " << f << std::endl;
-			std::cout << "Ld: " << Ld << std::endl;
-			verbose = false;
-		}
-
-		return Ld;
-
-#endif
+		*pdf = 1; // TODO: Higher?
+		Interaction lightit;
+		lightit.gonzoSphericalAreaLight = true;
+		lightit.gonzoRadius = radius;
+		lightit.p = sphereCenter;
+	    *vis = VisibilityTester(it, lightit);
+		return Li; // Only incoming light
 	}
 
 	extern Float GonzoCombinedCosine;
@@ -538,14 +508,14 @@ namespace pbrt {
 		const Light* lightPointer = &light;
 		const DiffuseAreaLight* dal = dynamic_cast<const DiffuseAreaLight*>(lightPointer);
 
+		Spectrum Li;
+
 		if (dal && dal->analytical) {
-			return EstimateDirectAnalytical(dal, it, bsdfFlags);
+			Li = EstimateIncomingAnalytical(dal, it, bsdfFlags, &lightPdf, &visibility);
 		}
-
-		Spectrum Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
-
-		// Return only incoming light
-		//return Li / lightPdf;
+		else {
+			Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
+		}
 
 		VLOG(2) << "EstimateDirect uLight:" << uLight << " -> Li: " << Li << ", wi: "
 			<< wi << ", pdf: " << lightPdf;
@@ -557,24 +527,6 @@ namespace pbrt {
 				const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
 				f = isect.bsdf->f(isect.wo, wi, bsdfFlags) *
 					AbsDot(wi, isect.shading.n);
-
-				// gonzo
-				Float cosine = AbsDot(wi, isect.shading.n);
-				//std::cout << "wi, n, cosine: " << wi << " " << isect.shading.n << " " << cosine << std::endl;
-				//std::cout << "Cosine: " << cosine << std::endl;
-				GonzoCombinedCosine += cosine;
-				//float cosine = Dot(wi, isect.shading.n);
-				//Spectrum C;
-				//if (cosine < 0.f) {
-				//	float rgb[]{ 1.f, 0.f, 0.f };
-				//	C = -cosine;
-				//}
-				//else {
-				//	C = 0.f;
-				//}
-				//return C;
-
-
 
 				scatteringPdf = isect.bsdf->Pdf(isect.wo, wi, bsdfFlags);
 				VLOG(2) << "  surf f*dot :" << f << ", scatteringPdf: " << scatteringPdf;

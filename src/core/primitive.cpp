@@ -87,11 +87,21 @@ bool TransformedPrimitive::IntersectP(const Ray &r) const {
     return primitive->IntersectP(InterpolatedWorldToPrim(r));
 }
 
+bool TransformedPrimitive::IntersectCone(const RayCone & r) const
+{
+	return false;
+}
+
 // GeometricPrimitive Method Definitions
 Bounds3f GeometricPrimitive::WorldBound() const { return shape->WorldBound(); }
 
 bool GeometricPrimitive::IntersectP(const Ray &r) const {
     return shape->IntersectP(r);
+}
+
+bool GeometricPrimitive::IntersectCone(const RayCone & r) const
+{
+	return false;
 }
 
 bool GeometricPrimitive::Intersect(const Ray &r,

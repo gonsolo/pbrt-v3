@@ -430,6 +430,12 @@ bool KdTreeAccel::IntersectP(const Ray &ray) const {
     return false;
 }
 
+bool KdTreeAccel::IntersectCone(const RayCone & ray) const
+{
+	// GONZO: TODO
+	return false;
+}
+
 std::shared_ptr<KdTreeAccel> CreateKdTreeAccelerator(
     const std::vector<std::shared_ptr<Primitive>> &prims, const ParamSet &ps) {
     int isectCost = ps.FindOneInt("intersectcost", 80);

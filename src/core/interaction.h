@@ -76,6 +76,12 @@ struct Interaction {
         Vector3f d = target - origin;
         return Ray(origin, d, 1 - ShadowEpsilon, time, GetMedium(d));
     }
+	RayCone SpawnConeTo(const Interaction &it) const {
+        Point3f origin = OffsetRayOrigin(p, pError, n, it.p - p);
+        Point3f target = OffsetRayOrigin(it.p, it.pError, it.n, origin - it.p);
+        Vector3f d = target - origin;
+        return RayCone(origin, d, 1 - ShadowEpsilon, time, GetMedium(d), it.gonzoRadius);
+	}
     Interaction(const Point3f &p, const Vector3f &wo, Float time,
                 const MediumInterface &mediumInterface)
         : p(p), time(time), wo(wo), mediumInterface(mediumInterface) {}
@@ -98,6 +104,9 @@ struct Interaction {
     Vector3f wo;
     Normal3f n;
     MediumInterface mediumInterface;
+
+	bool gonzoSphericalAreaLight = false;
+	Float gonzoRadius = 0.f;
 };
 
 class MediumInteraction : public Interaction {

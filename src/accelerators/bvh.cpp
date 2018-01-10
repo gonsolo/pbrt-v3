@@ -698,6 +698,11 @@ bool BVHAccel::Intersect(const Ray &ray, SurfaceInteraction *isect) const {
     return hit;
 }
 
+bool BVHAccel::IntersectCone(const RayCone &ray) const {
+	// GONZO: Not implemented
+	return false;
+}
+
 bool BVHAccel::IntersectP(const Ray &ray) const {
     if (!nodes) return false;
     ProfilePhase p(Prof::AccelIntersectP);

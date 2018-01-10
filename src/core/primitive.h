@@ -54,6 +54,7 @@ class Primitive {
     virtual Bounds3f WorldBound() const = 0;
     virtual bool Intersect(const Ray &r, SurfaceInteraction *) const = 0;
     virtual bool IntersectP(const Ray &r) const = 0;
+    virtual bool IntersectCone(const RayCone &r) const = 0;
     virtual const AreaLight *GetAreaLight() const = 0;
     virtual const Material *GetMaterial() const = 0;
     virtual void ComputeScatteringFunctions(SurfaceInteraction *isect,
@@ -69,6 +70,7 @@ class GeometricPrimitive : public Primitive {
     virtual Bounds3f WorldBound() const;
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const;
     virtual bool IntersectP(const Ray &r) const;
+    virtual bool IntersectCone(const RayCone &r) const;
     GeometricPrimitive(const std::shared_ptr<Shape> &shape,
                        const std::shared_ptr<Material> &material,
                        const std::shared_ptr<AreaLight> &areaLight,
@@ -100,6 +102,7 @@ class TransformedPrimitive : public Primitive {
         : primitive(primitive), PrimitiveToWorld(PrimitiveToWorld) {}
     bool Intersect(const Ray &r, SurfaceInteraction *in) const;
     bool IntersectP(const Ray &r) const;
+    bool IntersectCone(const RayCone &r) const;
     const AreaLight *GetAreaLight() const { return nullptr; }
     const Material *GetMaterial() const { return nullptr; }
     void ComputeScatteringFunctions(SurfaceInteraction *isect,

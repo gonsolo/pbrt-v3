@@ -893,6 +893,15 @@ class Ray {
     const Medium *medium;
 };
 
+class RayCone : public Ray {
+public:
+	RayCone(const Point3f &o, const Vector3f &d, Float tMax = Infinity,
+		Float time = 0.f, const Medium *medium = nullptr, Float r = 0.f)
+		: Ray(o, d, tMax, time, medium), radius(r) {}
+public:
+	Float radius;
+};
+
 class RayDifferential : public Ray {
   public:
     // RayDifferential Public Methods

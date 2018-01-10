@@ -59,6 +59,12 @@ bool Scene::IntersectP(const Ray &ray) const {
     return aggregate->IntersectP(ray);
 }
 
+bool Scene::IntersectCone(const RayCone &cone) const {
+    ++nShadowTests;
+    DCHECK_NE(cone.d, Vector3f(0,0,0));
+    return aggregate->IntersectP(cone);
+}
+
 bool Scene::IntersectTr(Ray ray, Sampler &sampler, SurfaceInteraction *isect,
                         Spectrum *Tr) const {
     *Tr = Spectrum(1.f);

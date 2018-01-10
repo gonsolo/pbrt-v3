@@ -57,6 +57,9 @@ Light::Light(int flags, const Transform &LightToWorld,
 Light::~Light() {}
 
 bool VisibilityTester::Unoccluded(const Scene &scene) const {
+	if (p1.gonzoSphericalAreaLight) {
+		return !scene.IntersectP(p0.SpawnConeTo(p1));
+	}
     return !scene.IntersectP(p0.SpawnRayTo(p1));
 }
 
