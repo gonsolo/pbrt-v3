@@ -93,11 +93,7 @@ class DisneyDiffuse : public BxDF {
     DisneyDiffuse(const Spectrum &R)
         : BxDF(BxDFType(BSDF_REFLECTION | BSDF_DIFFUSE)), R(R) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
-		// TODO: Unimplemented
-		Error("f_analytical not implemented for this BxDF!");
-        return Spectrum(0.f);
-	}
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosThetaLight, Float cosNormalLight) const;
 
 
     Spectrum rho(const Vector3f &, int, const Point2f *) const { return R; }
@@ -117,6 +113,35 @@ Spectrum DisneyDiffuse::f(const Vector3f &wo, const Vector3f &wi) const {
     return R * InvPi * (1 - Fo / 2) * (1 - Fi / 2);
 }
 
+Spectrum DisneyDiffuse::f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosThetaLight, Float cosNormalLight) const {
+
+	// Clamping the cosine of wi has to be done already.
+	// We should check that the area light is fully visible and above the horizon.
+	Float Fo = SchlickWeight(AbsCosTheta(wo));
+	Float alpha = acos(cosNormalLight);
+	Float theta = acos(cosThetaLight);
+
+	Float pi = 3.1415926535;
+	Spectrum result = ((-2 + Fo) * R * (-65536 + 229376 * cos(alpha) +
+		105 * cos(2 * alpha - 7 * theta) + 126 * cos(4 * alpha - 7 * theta) +
+		231 * cos(6 * alpha - 7 * theta) + 1155 * cos(2 * alpha - 5 * theta) +
+		2058 * cos(4 * alpha - 5 * theta) - 147 * cos(6 * alpha - 5 * theta) +
+		9345 * cos(2 * alpha - 3 * theta) - 1554 * cos(4 * alpha - 3 * theta) -
+		49 * cos(6 * alpha - 3 * theta) - 114688 * cos(alpha - 2 * theta) -
+		10605 * cos(2 * alpha - theta) - 630 * cos(4 * alpha - theta) -
+		35 * cos(6 * alpha - theta) + 58380 * cos(theta) + 6020 * cos(3 * theta) +
+		1036 * cos(5 * theta) + 100 * cos(7 * theta) -
+		10605 * cos(2 * alpha + theta) - 49 * cos(3 * (2 * alpha + theta)) -
+		630 * cos(4 * alpha + theta) - 35 * cos(6 * alpha + theta) -
+		114688 * cos(alpha + 2 * theta) + 9345 * cos(2 * alpha + 3 * theta) -
+		1554 * cos(4 * alpha + 3 * theta) + 1155 * cos(2 * alpha + 5 * theta) +
+		2058 * cos(4 * alpha + 5 * theta) - 147 * cos(6 * alpha + 5 * theta) +
+		105 * cos(2 * alpha + 7 * theta) + 126 * cos(4 * alpha + 7 * theta) +
+		231 * cos(6 * alpha + 7 * theta))) / (1835008 * pi * (-1 + cos(theta)));
+
+	return result;
+}
+
 std::string DisneyDiffuse::ToString() const {
     return StringPrintf("[ DisneyDiffuse R: %s ]", R.ToString().c_str());
 }
@@ -133,7 +158,7 @@ class DisneyFakeSS : public BxDF {
           R(R),
           roughness(roughness) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosThetaLight, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -182,7 +207,7 @@ class DisneyRetro : public BxDF {
           R(R),
           roughness(roughness) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosThetaLight, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -227,7 +252,7 @@ class DisneySheen : public BxDF {
     DisneySheen(const Spectrum &R, SheenMode mode)
         : BxDF(BxDFType(BSDF_REFLECTION | BSDF_DIFFUSE)), R(R), mode(mode) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosThetaLight, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -267,7 +292,7 @@ class DisneyClearcoat : public BxDF {
           weight(weight),
           gloss(gloss) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosThetaLight, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -561,10 +586,11 @@ void DisneyMaterial::ComputeScatteringFunctions(SurfaceInteraction *si,
                     c * diffuseWeight, sd, *si, e, this, mode);
             }
         }
-
+#if 0 // GONZO
         // Retro-reflection.
         si->bsdf->Add(
             ARENA_ALLOC(arena, DisneyRetro)(diffuseWeight * c, rough));
+#endif // GONZO
 
         // Sheen (if enabled)
         if (sheenWeight > 0)
@@ -587,8 +613,11 @@ void DisneyMaterial::ComputeScatteringFunctions(SurfaceInteraction *si,
              SchlickR0FromEta(e) * Lerp(specTint, Spectrum(1.), Ctint), c);
     Fresnel *fresnel =
         ARENA_ALLOC(arena, DisneyFresnel)(Cspec0, metallicWeight, e);
+
+#if 0 // GONZO
     si->bsdf->Add(
         ARENA_ALLOC(arena, MicrofacetReflection)(c, distrib, fresnel));
+#endif // GONZO
 
     // Clearcoat
     Float cc = clearcoat->Evaluate(*si);
@@ -620,6 +649,7 @@ void DisneyMaterial::ComputeScatteringFunctions(SurfaceInteraction *si,
         // Lambertian, weighted by (1 - diffTrans)
         si->bsdf->Add(ARENA_ALLOC(arena, LambertianTransmission)(dt * c));
     }
+	//std::cout << "=========================================" << std::endl;
 }
 
 DisneyMaterial *CreateDisneyMaterial(const TextureParams &mp) {

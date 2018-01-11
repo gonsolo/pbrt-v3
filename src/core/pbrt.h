@@ -422,6 +422,8 @@ T FindInterval(T size, const Predicate &pred) {
 
 inline Float Lerp(Float t, Float v1, Float v2) { return (1 - t) * v1 + t * v2; }
 
+inline Float Square(Float x) { return x*x; }
+
 inline bool Quadratic(Float a, Float b, Float c, Float *t0, Float *t1) {
     // Find quadratic discriminant
     double discrim = (double)b * (double)b - 4 * (double)a * (double)c;

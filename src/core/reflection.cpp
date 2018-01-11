@@ -179,10 +179,18 @@ Spectrum LambertianReflection::f(const Vector3f &wo, const Vector3f &wi) const {
     return R * InvPi;
 }
 
-Spectrum LambertianReflection::f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
-	//return 2 * R * phi;
-	//return R * phi;
-	return R * Pi;
+Spectrum LambertianReflection::f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
+
+	//Float alpha = acos(cosNormalLight);
+	Float theta = acos(cosLightAngle);
+	Float pi = 3.1415926535;
+	
+	// Sampling and analytical results do not quite match. I still have to investigate where
+	// this error comes from.
+	Float HACK = 2.f;
+	Spectrum result = HACK * R * Square(cos(theta/2)) * cosNormalLight / pi;
+
+	return result;
 }
 
 std::string LambertianReflection::ToString() const {
@@ -673,6 +681,13 @@ Spectrum BxDF::rho(int nSamples, const Point2f *u1, const Point2f *u2) const {
 }
 
 // BSDF Method Definitions
+
+void BSDF::Add(BxDF *b) {
+	CHECK_LT(nBxDFs, MaxBxDFs);
+	bxdfs[nBxDFs++] = b;
+	//std::cout << "Adding BxDF: " << b->ToString() << std::endl;
+}
+
 Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
                  BxDFType flags) const {
     ProfilePhase pp(Prof::BSDFEvaluation);
@@ -688,19 +703,23 @@ Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
     return f;
 }
 
-Spectrum BSDF::f_analytical(const Vector3f& woW, const Vector3f& wiW,
-	float phi, BxDFType flags) const {
+Spectrum BSDF::f_analytical(const Vector3f& woW,
+	const Vector3f& wiW,
+	Float cosLightAngle,
+	Float cosNormalLight,
+	BxDFType flags) const {
 
     ProfilePhase pp(Prof::BSDFEvaluation);
     Vector3f wi = WorldToLocal(wiW), wo = WorldToLocal(woW);
     if (wo.z == 0) return 0.;
-    bool reflect = Dot(wiW, ng) * Dot(woW, ng) > 0;
+    //bool reflect = Dot(wiW, ng) * Dot(woW, ng) > 0;
+	bool reflect = true;
     Spectrum f(0.f);
     for (int i = 0; i < nBxDFs; ++i)
         if (bxdfs[i]->MatchesFlags(flags) &&
             ((reflect && (bxdfs[i]->type & BSDF_REFLECTION)) ||
              (!reflect && (bxdfs[i]->type & BSDF_TRANSMISSION))))
-            f += bxdfs[i]->f_analytical(wo, wi, phi);
+            f += bxdfs[i]->f_analytical(wo, wi, cosLightAngle, cosNormalLight);
     return f;
 }
 

@@ -159,10 +159,7 @@ class BSDF {
           ng(si.n),
           ss(Normalize(si.shading.dpdu)),
           ts(Cross(ns, ss)) {}
-    void Add(BxDF *b) {
-        CHECK_LT(nBxDFs, MaxBxDFs);
-        bxdfs[nBxDFs++] = b;
-    }
+	void Add(BxDF *b);
     int NumComponents(BxDFType flags = BSDF_ALL) const;
     Vector3f WorldToLocal(const Vector3f &v) const {
         return Vector3f(Dot(v, ss), Dot(v, ts), Dot(v, ns));
@@ -175,7 +172,7 @@ class BSDF {
     Spectrum f(const Vector3f &woW, const Vector3f &wiW,
                BxDFType flags = BSDF_ALL) const;
 	Spectrum f_analytical(const Vector3f& woW, const Vector3f& wiW,
-					      float phi, BxDFType flags = BSDF_ALL) const;
+					      float cosLightAngle, float cosNormalLight, BxDFType flags = BSDF_ALL) const;
     Spectrum rho(int nSamples, const Point2f *samples1, const Point2f *samples2,
                  BxDFType flags = BSDF_ALL) const;
     Spectrum rho(const Vector3f &wo, int nSamples, const Point2f *samples,
@@ -214,9 +211,12 @@ class BxDF {
     // BxDF Interface
     virtual ~BxDF() {}
     BxDF(BxDFType type) : type(type) {}
-    bool MatchesFlags(BxDFType t) const { return (type & t) == type; }
+    bool MatchesFlags(BxDFType t) const {
+		//std::cout << "MatchesFlags: " << t << " " << type << std::endl;
+		return (type & t) == type;
+	}
     virtual Spectrum f(const Vector3f &wo, const Vector3f &wi) const = 0;
-    virtual Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const = 0;
+    virtual Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const = 0;
     virtual Spectrum Sample_f(const Vector3f &wo, Vector3f *wi,
                               const Point2f &sample, Float *pdf,
                               BxDFType *sampledType = nullptr) const;
@@ -250,7 +250,7 @@ class ScaledBxDF : public BxDF {
         return scale * bxdf->rho(nSamples, samples1, samples2);
     }
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -319,7 +319,7 @@ class SpecularReflection : public BxDF {
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const {
         return Spectrum(0.f);
     }
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -349,7 +349,7 @@ class SpecularTransmission : public BxDF {
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const {
         return Spectrum(0.f);
     }
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -382,7 +382,7 @@ class FresnelSpecular : public BxDF {
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const {
         return Spectrum(0.f);
     }
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -406,7 +406,7 @@ class LambertianReflection : public BxDF {
     LambertianReflection(const Spectrum &R)
         : BxDF(BxDFType(BSDF_REFLECTION | BSDF_DIFFUSE)), R(R) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-    Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const;
+    Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const;
     Spectrum rho(const Vector3f &, int, const Point2f *) const { return R; }
     Spectrum rho(int, const Point2f *, const Point2f *) const { return R; }
     std::string ToString() const;
@@ -422,7 +422,7 @@ class LambertianTransmission : public BxDF {
     LambertianTransmission(const Spectrum &T)
         : BxDF(BxDFType(BSDF_TRANSMISSION | BSDF_DIFFUSE)), T(T) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-    Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+    Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -444,7 +444,7 @@ class OrenNayar : public BxDF {
   public:
     // OrenNayar Public Methods
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-    	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+    	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -475,7 +475,7 @@ class MicrofacetReflection : public BxDF {
           distribution(distribution),
           fresnel(fresnel) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -507,7 +507,7 @@ class MicrofacetTransmission : public BxDF {
           fresnel(etaA, etaB),
           mode(mode) {}
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -533,7 +533,7 @@ class FresnelBlend : public BxDF {
     FresnelBlend(const Spectrum &Rd, const Spectrum &Rs,
                  MicrofacetDistribution *distrib);
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);
@@ -558,7 +558,7 @@ class FourierBSDF : public BxDF {
   public:
     // FourierBSDF Public Methods
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
-	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, float phi) const {
+	Spectrum f_analytical(const Vector3f &wo, const Vector3f &wi, Float cosLightAngle, Float cosNormalLight) const {
 		// TODO: Unimplemented
 		Error("f_analytical not implemented for this BxDF!");
         return Spectrum(0.f);

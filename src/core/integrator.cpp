@@ -34,6 +34,7 @@
  // core/integrator.cpp*
 #include "integrator.h"
 #include "scene.h"
+#include "geometry.h"
 #include "interaction.h"
 #include "sampling.h"
 #include "parallel.h"
@@ -414,79 +415,42 @@ namespace pbrt {
 	};
 
 
-	Float square(Float v) {
-		return v*v;
-	}
 
 	static bool verbose = true;
 
 	Spectrum EstimateIncomingAnalytical(const DiffuseAreaLight* dal,
 			const Interaction& it,
-			BxDFType bsdfFlags,
 			Float* pdf,
-			VisibilityTester* vis) {
+			VisibilityTester* vis,
+			Float* cosThetaLight,
+			Vector3f* wi) {
 
 		Spectrum Ld;
 		auto shape = dal->shape;
 		const std::type_info& info = typeid(*shape);
-		//std::cout << info.name() << std::endl;
 		Shape* tmp = shape.get();
 		Sphere* sphere = dynamic_cast<Sphere*>(tmp);
 		Point3f sphereCenter = (*sphere->ObjectToWorld)(Point3f(0, 0, 0));
-		//std::cout << "Center: " << sphereCenter << std::endl;
-		//std::cout << "Intersection point: " << ref.p << std::endl;
-		//std::cout << "Intersection normal: " << ref.n << std::endl;
 
 		Float radius = sphere->radius;
-		//Float l = sphereCenter.x - it.p.x;
-		//Float h = sphereCenter.y - it.p.y;
-		//Float d = sphereCenter.z - it.p.z;
-		//std::cout << "r, l, h, d: " << r << ' ' << l << ' ' << h << ' ' << d << std::endl;
-		//Float H = h / l;
-		//Float R = r / l;
-		//Float D = d / l;
-		//Float F = R*R / std::pow((1.0 + D*D + H*H), 1.5);
-		//std::cout << "F: " << F << std::endl;
-
 		auto Lemit = dal->Lemit;
-
-		// Incoming vector
-		//Vector3f wiUnnormalized = Vector3f(l, h, d);
-		//Vector3f wi = Normalize(wiUnnormalized);
-		//float distance = wiUnnormalized.Length();
-		//float distance2 = distance * distance;
-
-		//float RoverD = r / distance;
-		//float RoverD2 = RoverD * RoverD;
-		//float ir = sqrt(1.f - RoverD2);
-		//float bl = 1.f - ir;
-		//float cosine = AbsDot(wi, isect.shading.n);
-		//float blcos = cosine * RoverD2;
-
-		//float area = 4.f * Pi * r * r;
-
-		// Sphere as point approximation
-		// I (point light) = Pi * Lemit (sphere)
-		// Sphere with radius
-		//auto Li = Lemit * Pi  * radius*radius / DistanceSquared(sphereCenter, it.p);
-
-		//auto Li = Lemit * Pi * radius*radius / DistanceSquared(sphereCenter, it.p);
 
 		// Uniform cone sampling from PBRT always gives a noise free image since
 		// the computation is independent from distance and angle of the sample
 		// point. This is because we don't have to convert from area measure to
 		// solid angle measure.
-		Float radiusSquared = radius * radius;
+		Float radiusSquared = Square(radius);
 		Float distanceSquared = DistanceSquared(sphereCenter, it.p);
 		Float sinThetaLight2 = radiusSquared / distanceSquared;
-		Float cosThetaLight = std::max(0.f, std::sqrt(1.f - sinThetaLight2));
-		Spectrum Li = Lemit * 2 * Pi * (1 - cosThetaLight);
+		*cosThetaLight = std::max(0.f, std::sqrt(1.f - sinThetaLight2));
+		Spectrum Li = Lemit * 2 * Pi * (1 - *cosThetaLight);
 		*pdf = 1; // TODO: Higher?
 		Interaction lightit;
 		lightit.gonzoSphericalAreaLight = true;
 		lightit.gonzoRadius = radius;
 		lightit.p = sphereCenter;
 	    *vis = VisibilityTester(it, lightit);
+		*wi = Normalize(sphereCenter - it.p);
 		return Li; // Only incoming light
 	}
 
@@ -509,9 +473,10 @@ namespace pbrt {
 		const DiffuseAreaLight* dal = dynamic_cast<const DiffuseAreaLight*>(lightPointer);
 
 		Spectrum Li;
-
+		Float cosThetaLight;
 		if (dal && dal->analytical) {
-			Li = EstimateIncomingAnalytical(dal, it, bsdfFlags, &lightPdf, &visibility);
+			Li = EstimateIncomingAnalytical(dal, it, &lightPdf, &visibility, &cosThetaLight, &wi);
+			//std::cout << "Analytical Li: " << Li << std::endl;
 		}
 		else {
 			Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
@@ -525,10 +490,16 @@ namespace pbrt {
 			if (it.IsSurfaceInteraction()) {
 				// Evaluate BSDF for light sampling strategy
 				const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-				f = isect.bsdf->f(isect.wo, wi, bsdfFlags) *
-					AbsDot(wi, isect.shading.n);
-
-				scatteringPdf = isect.bsdf->Pdf(isect.wo, wi, bsdfFlags);
+				if (dal && dal->analytical) {
+					Float cosNormalLight = AbsDot(wi, isect.shading.n);
+					f = isect.bsdf->f_analytical(isect.wo, wi, cosThetaLight, cosNormalLight, bsdfFlags);
+					//std::cout << "Analytical BSDF: " << f << std::endl;
+					scatteringPdf = 1.f; // GONZO: TODO
+				}
+				else {
+					f = isect.bsdf->f(isect.wo, wi, bsdfFlags) * AbsDot(wi, isect.shading.n);
+					scatteringPdf = isect.bsdf->Pdf(isect.wo, wi, bsdfFlags);
+				}
 				VLOG(2) << "  surf f*dot :" << f << ", scatteringPdf: " << scatteringPdf;
 			}
 			else {
@@ -566,6 +537,9 @@ namespace pbrt {
 				}
 			}
 		}
+
+		// GONZO: No BSDF sampling for now
+		return Ld;
 
 		// Sample BSDF with multiple importance sampling
 		if (!IsDeltaLight(light.flags)) {
