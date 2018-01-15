@@ -76,6 +76,7 @@
 #include "materials/metal.h"
 #include "materials/mirror.h"
 #include "materials/mixmat.h"
+#include "materials/phong.h"
 #include "materials/plastic.h"
 #include "materials/substrate.h"
 #include "materials/subsurface.h"
@@ -411,22 +412,24 @@ STAT_COUNTER("Scene/Materials created", nMaterialsCreated);
 std::shared_ptr<Material> MakeMaterial(const std::string &name,
                                        const TextureParams &mp) {
     Material *material = nullptr;
-    if (name == "" || name == "none")
-        return nullptr;
-    else if (name == "matte")
-        material = CreateMatteMaterial(mp);
-    else if (name == "plastic")
-        material = CreatePlasticMaterial(mp);
-    else if (name == "translucent")
-        material = CreateTranslucentMaterial(mp);
-    else if (name == "glass")
-        material = CreateGlassMaterial(mp);
-    else if (name == "mirror")
-        material = CreateMirrorMaterial(mp);
-    else if (name == "hair")
-        material = CreateHairMaterial(mp);
-    else if (name == "disney")
-        material = CreateDisneyMaterial(mp);
+	if (name == "" || name == "none")
+		return nullptr;
+	else if (name == "matte")
+		material = CreateMatteMaterial(mp);
+	else if (name == "plastic")
+		material = CreatePlasticMaterial(mp);
+	else if (name == "translucent")
+		material = CreateTranslucentMaterial(mp);
+	else if (name == "glass")
+		material = CreateGlassMaterial(mp);
+	else if (name == "mirror")
+		material = CreateMirrorMaterial(mp);
+	else if (name == "hair")
+		material = CreateHairMaterial(mp);
+	else if (name == "disney")
+		material = CreateDisneyMaterial(mp);
+	else if (name == "phong")
+		material = CreatePhongMaterial(mp);
     else if (name == "mix") {
         std::string m1 = mp.FindString("namedmaterial1", "");
         std::string m2 = mp.FindString("namedmaterial2", "");
