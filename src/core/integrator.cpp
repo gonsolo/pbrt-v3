@@ -474,10 +474,13 @@ namespace pbrt {
 
 		Spectrum Li;
 		Float cosThetaLight;
+		bool analytical = false;
 		if (dal && dal->analytical) {
+			analytical = true;
+		}
+		if(analytical)
 			Li = EstimateIncomingAnalytical(dal, it, &lightPdf, &visibility, &cosThetaLight, &wi);
 			//std::cout << "Analytical Li: " << Li << std::endl;
-		}
 		else {
 			Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
 		}
@@ -490,11 +493,11 @@ namespace pbrt {
 			if (it.IsSurfaceInteraction()) {
 				// Evaluate BSDF for light sampling strategy
 				const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-				if (dal && dal->analytical) {
+
+				if (analytical) {
 					Float cosNormalLight = AbsDot(wi, isect.shading.n);
 					f = isect.bsdf->f_analytical(isect.wo, wi, cosThetaLight, cosNormalLight, bsdfFlags);
 					//std::cout << "Analytical BSDF: " << f << std::endl;
-					scatteringPdf = 1.f; // GONZO: TODO
 				}
 				else {
 					f = isect.bsdf->f(isect.wo, wi, bsdfFlags) * AbsDot(wi, isect.shading.n);
@@ -530,8 +533,13 @@ namespace pbrt {
 					if (IsDeltaLight(light.flags))
 						Ld += f * Li / lightPdf;
 					else {
-						Float weight =
-							PowerHeuristic(1, lightPdf, 1, scatteringPdf);
+						Float weight;
+						if (analytical) {
+							weight = 1;
+						}
+						else {
+							weight = PowerHeuristic(1, lightPdf, 1, scatteringPdf);
+						}
 						Ld += f * Li * weight / lightPdf;
 					}
 				}
@@ -539,7 +547,8 @@ namespace pbrt {
 		}
 
 		// GONZO: No BSDF sampling for now
-		return Ld;
+		if(analytical)
+			return Ld;
 
 		// Sample BSDF with multiple importance sampling
 		if (!IsDeltaLight(light.flags)) {
@@ -654,6 +663,9 @@ namespace pbrt {
 						continue;
 
 					do {
+						// GONZO DEBUG
+						//pixel.x = 940;
+						//pixel.y = 400;
 						// Initialize _CameraSample_ for current sample
 						CameraSample cameraSample =
 							tileSampler->GetCameraSample(pixel);

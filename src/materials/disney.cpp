@@ -614,7 +614,7 @@ void DisneyMaterial::ComputeScatteringFunctions(SurfaceInteraction *si,
     Fresnel *fresnel =
         ARENA_ALLOC(arena, DisneyFresnel)(Cspec0, metallicWeight, e);
 
-#if 1 // GONZO
+#if 0 // GONZO
     si->bsdf->Add(
         ARENA_ALLOC(arena, MicrofacetReflection)(c, distrib, fresnel));
 #endif // GONZO

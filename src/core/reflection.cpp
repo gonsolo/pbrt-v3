@@ -183,12 +183,10 @@ Spectrum LambertianReflection::f_analytical(const Vector3f &wo, const Vector3f &
 
 	//Float alpha = acos(cosNormalLight);
 	Float theta = acos(cosLightAngle);
-	Float pi = 3.1415926535;
 	
 	// Sampling and analytical results do not quite match. I still have to investigate where
 	// this error comes from.
-	Float HACK = 2.f;
-	Spectrum result = HACK * R * Square(cos(theta/2)) * cosNormalLight / pi;
+	Spectrum result = R * Square(cos(theta/2)) * cosNormalLight / Pi;
 
 	return result;
 }
