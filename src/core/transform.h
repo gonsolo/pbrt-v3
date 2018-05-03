@@ -122,7 +122,11 @@ class Transform {
                       mat[3][3]);
         mInv = Inverse(m);
     }
-    Transform(const Matrix4x4 &m) : m(m), mInv(Inverse(m)) {}
+    Transform(const Matrix4x4 &m) : m(m), mInv(Inverse(m)) {
+        //std::cout << "init transfrom from matrix" << std::endl;
+        //std::cout << m << std::endl;
+        //std::cout << mInv << std::endl; 
+    }
     Transform(const Matrix4x4 &m, const Matrix4x4 &mInv) : m(m), mInv(mInv) {}
     void Print(FILE *f) const;
     friend Transform Inverse(const Transform &t) {

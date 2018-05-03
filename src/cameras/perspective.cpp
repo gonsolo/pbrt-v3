@@ -88,6 +88,7 @@ Float PerspectiveCamera::GenerateRay(const CameraSample &sample,
     }
     ray->time = Lerp(sample.time, shutterOpen, shutterClose);
     ray->medium = medium;
+    //std::cout << "CameraToWorld: " << *CameraToWorld.gonzo() << std::endl;
     *ray = CameraToWorld(*ray);
     return 1;
 }

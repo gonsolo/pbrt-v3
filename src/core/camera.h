@@ -98,13 +98,27 @@ class ProjectiveCamera : public Camera {
         // Compute projective camera transformations
 
         // Compute projective camera screen transformations
+        //std::cout << "screenWindow: " << screenWindow << std::endl;
+        //auto scale1 = Scale(film->fullResolution.x, film->fullResolution.y, 1);
+        //auto scale2 = Scale(1 / (screenWindow.pMax.x - screenWindow.pMin.x), 1 / (screenWindow.pMin.y - screenWindow.pMax.y), 1);
+        //auto trans = Translate(Vector3f(-screenWindow.pMin.x, -screenWindow.pMax.y, 0));
+        //std::cout << "scale1: " << scale1 << std::endl;
+        //std::cout << "scale2: " << scale2 << std::endl;
+        //std::cout << "trans: " << trans << std::endl;
+        //auto scale3 = scale1 * scale2;
+        //std::cout << "scale3: " << scale3 << std::endl;
+        //auto scale3trans = scale3 * trans;
+        //std::cout << "scale3trans: " << scale3trans << std::endl;
         ScreenToRaster =
             Scale(film->fullResolution.x, film->fullResolution.y, 1) *
             Scale(1 / (screenWindow.pMax.x - screenWindow.pMin.x),
                   1 / (screenWindow.pMin.y - screenWindow.pMax.y), 1) *
             Translate(Vector3f(-screenWindow.pMin.x, -screenWindow.pMax.y, 0));
+        //std::cout << "ScreenToRaster: " << ScreenToRaster << std::endl;
         RasterToScreen = Inverse(ScreenToRaster);
+        //std::cout << "RasterToScreen" << RasterToScreen << std::endl;
         RasterToCamera = Inverse(CameraToScreen) * RasterToScreen;
+        //std::cout << "RasterToCamera" << RasterToCamera << std::endl;
     }
 
   protected:

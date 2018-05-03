@@ -77,10 +77,21 @@ struct BVHBuildNode {
         nPrimitives = 0;
         ++interiorNodes;
     }
+    void Dump(const std::string& msg) {
+        if(!msg.empty()) std::cout << msg << std::endl;
+        std::cout << "firstPrimOffset: " << firstPrimOffset << std::endl;
+        std::cout << "nPrimitives: " << nPrimitives << std::endl;
+        std::cout << "left" << std::endl;
+        if(children[0]) children[0]->Dump("");
+        std::cout << "right" << std::endl;
+        if(children[1]) children[1]->Dump("");
+    }
+
+
     Bounds3f bounds;
     BVHBuildNode *children[2];
-	int splitAxis;
-	size_t firstPrimOffset, nPrimitives;
+    int splitAxis;
+    size_t firstPrimOffset, nPrimitives;
 };
 
 struct MortonPrimitive {
@@ -192,8 +203,9 @@ BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>> &p,
 
     // Initialize _primitiveInfo_ array for primitives
     std::vector<BVHPrimitiveInfo> primitiveInfo(primitives.size());
-    for (size_t i = 0; i < primitives.size(); ++i)
+    for (size_t i = 0; i < primitives.size(); ++i) {
         primitiveInfo[i] = {i, primitives[i]->WorldBound()};
+    }
 
     // Build BVH tree for primitives using _primitiveInfo_
     MemoryArena arena(1024 * 1024);
@@ -206,6 +218,8 @@ BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>> &p,
     else
         root = recursiveBuild(arena, primitiveInfo, 0, primitives.size(),
                               &totalNodes, orderedPrims);
+    //root->Dump("root");
+    exit(0);
     primitives.swap(orderedPrims);
     LOG(INFO) << StringPrintf("BVH created with %d nodes for %d "
                               "primitives (%.2f MB)", totalNodes,
@@ -235,15 +249,19 @@ BVHBuildNode *BVHAccel::recursiveBuild(
     MemoryArena &arena, std::vector<BVHPrimitiveInfo> &primitiveInfo, size_t start,
     size_t end, int *totalNodes,
     std::vector<std::shared_ptr<Primitive>> &orderedPrims) {
+
     CHECK_NE(start, end);
     BVHBuildNode *node = arena.Alloc<BVHBuildNode>();
     (*totalNodes)++;
     // Compute bounds of all primitives in BVH node
     Bounds3f bounds;
-    for (size_t i = start; i < end; ++i)
+    for (size_t i = start; i < end; ++i) {
+        //std::cout << primitiveInfo[i].bounds << std::endl;
         bounds = Union(bounds, primitiveInfo[i].bounds);
-	assert(start <= end);
-	size_t nPrimitives = end - start;
+    }
+    //std::cout << start << " " << end << " " << bounds << std::endl;
+    assert(start <= end);
+    size_t nPrimitives = end - start;
     if (nPrimitives == 1) {
         // Create leaf _BVHBuildNode_
         size_t firstPrimOffset = orderedPrims.size();
@@ -256,13 +274,18 @@ BVHBuildNode *BVHAccel::recursiveBuild(
     } else {
         // Compute bound of primitive centroids, choose split dimension _dim_
         Bounds3f centroidBounds;
-        for (size_t i = start; i < end; ++i)
+        for (size_t i = start; i < end; ++i) {
+            //std::cout << "primitive centroid: " << primitiveInfo[i].centroid << std::endl;
             centroidBounds = Union(centroidBounds, primitiveInfo[i].centroid);
+        }
+        //std::cout << "centroidBounds " << centroidBounds << std::endl;
         int dim = centroidBounds.MaximumExtent();
+        //std::cout << dim << std::endl;
 
         // Partition primitives into two sets and build children
         size_t mid = (start + end) / 2;
         if (centroidBounds.pMax[dim] == centroidBounds.pMin[dim]) {
+            std::cout << "leaf" << std::endl;
             // Create leaf _BVHBuildNode_
             size_t firstPrimOffset = orderedPrims.size();
             for (size_t i = start; i < end; ++i) {
@@ -272,6 +295,7 @@ BVHBuildNode *BVHAccel::recursiveBuild(
             node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
             return node;
         } else {
+            std::cout << "interior" << std::endl;
             // Partition primitives based on _splitMethod_
             switch (splitMethod) {
             case SplitMethod::Middle: {
@@ -293,12 +317,20 @@ BVHBuildNode *BVHAccel::recursiveBuild(
             case SplitMethod::EqualCounts: {
                 // Partition primitives into equally-sized subsets
                 mid = (start + end) / 2;
+                std::cout << start << " " << end << " " << mid << std::endl;
+                std::cout << primitiveInfo[mid].centroid[dim] << std::endl;
+                for(const auto& p : primitiveInfo)
+                        std::cout << p.primitiveNumber << " " << p.centroid[dim] << std::endl;
                 std::nth_element(&primitiveInfo[start], &primitiveInfo[mid],
                                  &primitiveInfo[end - 1] + 1,
                                  [dim](const BVHPrimitiveInfo &a,
                                        const BVHPrimitiveInfo &b) {
                                      return a.centroid[dim] < b.centroid[dim];
                                  });
+                std::cout << "--" << std::endl;
+                for(const auto& p : primitiveInfo)
+                        std::cout << p.primitiveNumber << " " << p.centroid[dim] << std::endl;
+                //exit(0);
                 break;
             }
             case SplitMethod::SAH:
@@ -390,11 +422,16 @@ BVHBuildNode *BVHAccel::recursiveBuild(
                 break;
             }
             }
-            node->InitInterior(dim,
-                               recursiveBuild(arena, primitiveInfo, start, mid,
-                                              totalNodes, orderedPrims),
-                               recursiveBuild(arena, primitiveInfo, mid, end,
-                                              totalNodes, orderedPrims));
+
+            //std::cout << "InitInterior: " << start << " " << mid << " " << end << std::endl;
+            auto left = recursiveBuild(arena, primitiveInfo, start, mid, totalNodes, orderedPrims);
+            auto right = recursiveBuild(arena, primitiveInfo, mid, end, totalNodes, orderedPrims);
+            node->InitInterior(dim, left, right);
+            //node->InitInterior(dim,
+            //                   recursiveBuild(arena, primitiveInfo, start, mid,
+            //                                  totalNodes, orderedPrims),
+            //                   recursiveBuild(arena, primitiveInfo, mid, end,
+            //                                  totalNodes, orderedPrims));
         }
     }
     return node;
@@ -639,6 +676,7 @@ BVHBuildNode *BVHAccel::buildUpperSAH(MemoryArena &arena,
 int BVHAccel::flattenBVHTree(BVHBuildNode *node, int *offset) {
     LinearBVHNode *linearNode = &nodes[*offset];
     linearNode->bounds = node->bounds;
+    //std::cout << "flatten with offset: " << *offset << std::endl;
     int myOffset = (*offset)++;
     if (node->nPrimitives > 0) {
         CHECK(!node->children[0] && !node->children[1]);
