@@ -219,7 +219,7 @@ BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>> &p,
         root = recursiveBuild(arena, primitiveInfo, 0, primitives.size(),
                               &totalNodes, orderedPrims);
     //root->Dump("root");
-    exit(0);
+    //exit(0);
     primitives.swap(orderedPrims);
     LOG(INFO) << StringPrintf("BVH created with %d nodes for %d "
                               "primitives (%.2f MB)", totalNodes,
@@ -285,7 +285,7 @@ BVHBuildNode *BVHAccel::recursiveBuild(
         // Partition primitives into two sets and build children
         size_t mid = (start + end) / 2;
         if (centroidBounds.pMax[dim] == centroidBounds.pMin[dim]) {
-            std::cout << "leaf" << std::endl;
+            //std::cout << "leaf" << std::endl;
             // Create leaf _BVHBuildNode_
             size_t firstPrimOffset = orderedPrims.size();
             for (size_t i = start; i < end; ++i) {
@@ -295,7 +295,7 @@ BVHBuildNode *BVHAccel::recursiveBuild(
             node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
             return node;
         } else {
-            std::cout << "interior" << std::endl;
+            //std::cout << "interior" << std::endl;
             // Partition primitives based on _splitMethod_
             switch (splitMethod) {
             case SplitMethod::Middle: {
@@ -317,19 +317,19 @@ BVHBuildNode *BVHAccel::recursiveBuild(
             case SplitMethod::EqualCounts: {
                 // Partition primitives into equally-sized subsets
                 mid = (start + end) / 2;
-                std::cout << start << " " << end << " " << mid << std::endl;
-                std::cout << primitiveInfo[mid].centroid[dim] << std::endl;
-                for(const auto& p : primitiveInfo)
-                        std::cout << p.primitiveNumber << " " << p.centroid[dim] << std::endl;
+                //std::cout << start << " " << end << " " << mid << std::endl;
+                //std::cout << primitiveInfo[mid].centroid[dim] << std::endl;
+                //for(const auto& p : primitiveInfo)
+                        //std::cout << p.primitiveNumber << " " << p.centroid[dim] << std::endl;
                 std::nth_element(&primitiveInfo[start], &primitiveInfo[mid],
                                  &primitiveInfo[end - 1] + 1,
                                  [dim](const BVHPrimitiveInfo &a,
                                        const BVHPrimitiveInfo &b) {
                                      return a.centroid[dim] < b.centroid[dim];
                                  });
-                std::cout << "--" << std::endl;
-                for(const auto& p : primitiveInfo)
-                        std::cout << p.primitiveNumber << " " << p.centroid[dim] << std::endl;
+                //std::cout << "--" << std::endl;
+                //for(const auto& p : primitiveInfo)
+                        //std::cout << p.primitiveNumber << " " << p.centroid[dim] << std::endl;
                 //exit(0);
                 break;
             }
