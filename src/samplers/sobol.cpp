@@ -40,8 +40,9 @@ namespace pbrt {
 
 // SobolSampler Method Definitions
 Int SobolSampler::GetIndexForSample(Int sampleNum) const {
-    return SobolIntervalToIndex(log2Resolution, sampleNum,
-                                Point2i(currentPixel - sampleBounds.pMin));
+    auto result = SobolIntervalToIndex(log2Resolution, sampleNum, Point2i(currentPixel - sampleBounds.pMin));
+    //std::cout << "GetIndexForSample: log2Resolution: " << log2Resolution << ", sampleNum: " << sampleNum << ", currentPixel: " << currentPixel << ", pMin: " << sampleBounds.pMin << ", result: " << result << std::endl;
+    return result;
 }
 
 Float SobolSampler::SampleDimension(int64_t index, Int dim) const {
@@ -50,6 +51,9 @@ Float SobolSampler::SampleDimension(int64_t index, Int dim) const {
                                    "dimensions! Exiting.",
                                    NumSobolDimensions);
     Float s = SobolSample(index, dim);
+
+    //std::cout << s << std::endl;
+ 
     // Remap Sobol$'$ dimensions used for pixel samples
     if (dim == 0 || dim == 1) {
         s = s * resolution + sampleBounds.pMin[dim];

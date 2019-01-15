@@ -264,6 +264,7 @@ inline float SobolSampleFloat(int64_t a, size_t dimension, uint32_t scramble) {
     uint32_t v = scramble;
     for (size_t i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
         if (a & 1) v ^= SobolMatrices32[i];
+    //std::cout << v << std::endl;
 #ifndef PBRT_HAVE_HEX_FP_CONSTANTS
     return std::min(v * 2.3283064365386963e-10f /* 1/2^32 */,
                     FloatOneMinusEpsilon);
@@ -278,11 +279,18 @@ inline double SobolSampleDouble(int64_t a, size_t dimension, uint64_t scramble) 
       "Integrator has consumed too many Sobol' dimensions; you "
       "may want to use a Sampler without a dimension limit like "
       "\"02sequence\".";
+
+    //std::cout << "SobolSample " << a << " " << dimension << " " << scramble << std::endl;
     uint64_t result = scramble & ~ - (1LL << SobolMatrixSize);
-    for (auto i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++)
+    for (auto i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++) {
         if (a & 1) result ^= SobolMatrices64[i];
-    return std::min(result * (1.0 / (1ULL << SobolMatrixSize)),
-                    DoubleOneMinusEpsilon);
+        //std::cout << "SobolSampleDouble: " << i << " " << a << " " << SobolMatrices64[i] << " " << result << std::endl;
+    }
+    //std::cout << "exit" << std::endl;
+    // gonzo return std::min(result * (1.0 / (1ULL << SobolMatrixSize)), DoubleOneMinusEpsilon);
+    auto gonzo = std::min(result * (1.0 / (1ULL << SobolMatrixSize)), DoubleOneMinusEpsilon);
+    //std::cout << "  returning: " << gonzo << std::endl;
+    return gonzo;
 }
 
 }  // namespace pbrt

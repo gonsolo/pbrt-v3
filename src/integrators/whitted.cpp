@@ -75,8 +75,10 @@ Spectrum WhittedIntegrator::Li(const RayDifferential &ray, const Scene &scene,
             light->Sample_Li(isect, sampler.Get2D(), &wi, &pdf, &visibility);
         if (Li.IsBlack() || pdf == 0) continue;
         Spectrum f = isect.bsdf->f(wo, wi);
-        if (!f.IsBlack() && visibility.Unoccluded(scene))
+        if (!f.IsBlack() && visibility.Unoccluded(scene)) {
             L += f * Li * AbsDot(wi, n) / pdf;
+            //std::cout << L << " " << f << " " << Li << " " << wi << " " << n << " " << AbsDot(wi, n) << " " << pdf << std::endl;
+        }
     }
     if (depth + 1 < maxDepth) {
         // Trace rays for specular reflection and refraction

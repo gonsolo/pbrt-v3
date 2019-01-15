@@ -176,6 +176,7 @@ void Film::WriteImage(Float splatScale) {
         Pixel &pixel = GetPixel(p);
         XYZToRGB(pixel.xyz, &rgb[3 * offset]);
 
+
         // Normalize pixel with weight sum
         Float filterWeightSum = pixel.filterWeightSum;
         if (filterWeightSum != 0) {
@@ -200,6 +201,8 @@ void Film::WriteImage(Float splatScale) {
         rgb[3 * offset] *= scale;
         rgb[3 * offset + 1] *= scale;
         rgb[3 * offset + 2] *= scale;
+
+        //std::cout << "rgb after scale: " << rgb[3 * offset] << std::endl;
         ++offset;
     }
 

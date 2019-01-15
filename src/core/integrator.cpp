@@ -231,6 +231,12 @@ void SamplerIntegrator::Render(const Scene &scene) {
 
     // Compute number of tiles, _nTiles_, to use for parallel rendering
     Bounds2i sampleBounds = camera->film->GetSampleBounds();
+
+    // Single ray
+    //int x = 150;
+    //int y = 125;
+    //Bounds2i sampleBounds = Bounds2i(Point2i(x, y), Point2i(x+1, y+1));
+
     Vector2i sampleExtent = sampleBounds.Diagonal();
     const Int tileSize = 16;
     Point2i nTiles((sampleExtent.x + tileSize - 1) / tileSize,

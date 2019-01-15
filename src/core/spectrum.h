@@ -57,6 +57,8 @@ inline void XYZToRGB(const Float xyz[3], Float rgb[3]) {
     rgb[0] = 3.240479f * xyz[0] - 1.537150f * xyz[1] - 0.498535f * xyz[2];
     rgb[1] = -0.969256f * xyz[0] + 1.875991f * xyz[1] + 0.041556f * xyz[2];
     rgb[2] = 0.055648f * xyz[0] - 0.204043f * xyz[1] + 1.057311f * xyz[2];
+
+    //std::cout << "xyz: " << xyz[0] << ", rgb: " << rgb[0] << std::endl;
 }
 
 inline void RGBToXYZ(const Float rgb[3], Float xyz[3]) {

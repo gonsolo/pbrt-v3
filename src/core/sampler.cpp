@@ -45,7 +45,13 @@ Sampler::~Sampler() {}
 Sampler::Sampler(int64_t samplesPerPixel) : samplesPerPixel(samplesPerPixel) {}
 CameraSample Sampler::GetCameraSample(const Point2i &pRaster) {
     CameraSample cs;
-    cs.pFilm = (Point2f)pRaster + Get2D();
+
+    // gonzo cs.pFilm = (Point2f)pRaster + Get2D();
+    auto s = Get2D();
+    //std::cout << "Camera sample: " << s << std::endl;
+    cs.pFilm = (Point2f)pRaster + s;
+
+
     cs.time = Get1D();
     cs.pLens = Get2D();
     return cs;
@@ -138,6 +144,7 @@ void GlobalSampler::StartPixel(const Point2i &p) {
     Sampler::StartPixel(p);
     dimension = 0;
     intervalSampleIndex = GetIndexForSample(0);
+    //std::cout << "Start Pixel: intervalSampleIndex: " << intervalSampleIndex << std::endl;
     // Compute _arrayEndDim_ for dimensions used for array samples
     arrayEndDim =
         arrayStartDim + sampleArray1D.size() + 2 * sampleArray2D.size();
@@ -188,6 +195,7 @@ Point2f GlobalSampler::Get2D() {
     ProfilePhase _(Prof::GetSample);
     if (dimension + 1 >= arrayStartDim && dimension < arrayEndDim)
         dimension = arrayEndDim;
+
     Point2f p(SampleDimension(intervalSampleIndex, dimension),
               SampleDimension(intervalSampleIndex, dimension + 1));
     dimension += 2;
