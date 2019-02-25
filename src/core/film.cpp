@@ -176,7 +176,6 @@ void Film::WriteImage(Float splatScale) {
         Pixel &pixel = GetPixel(p);
         XYZToRGB(pixel.xyz, &rgb[3 * offset]);
 
-
         // Normalize pixel with weight sum
         Float filterWeightSum = pixel.filterWeightSum;
         if (filterWeightSum != 0) {

@@ -83,9 +83,11 @@ Spectrum PathIntegrator::Li(const RayDifferential &r, const Scene &scene,
         VLOG(2) << "Path tracer bounce " << bounces << ", current L = " << L
                 << ", beta = " << beta;
 
+        //std::cout << "bounces: " << bounces << std::endl;
         // Intersect _ray_ with scene and store intersection in _isect_
         SurfaceInteraction isect;
         bool foundIntersection = scene.Intersect(ray, &isect);
+        //std::cout << "Found intersection: " << foundIntersection << std::endl;
 
         // Possibly add emitted light at intersection
         if (bounces == 0 || specularBounce) {
@@ -101,7 +103,10 @@ Spectrum PathIntegrator::Li(const RayDifferential &r, const Scene &scene,
         }
 
         // Terminate path if ray escaped or _maxDepth_ was reached
-        if (!foundIntersection || bounces >= maxDepth) break;
+        if (!foundIntersection || bounces >= maxDepth) {
+                //std::cout << "No intersection" << std::endl;
+                break;
+        }
 
         // Compute scattering functions and skip over medium boundaries
         isect.ComputeScatteringFunctions(ray, arena, true);
@@ -125,6 +130,7 @@ Spectrum PathIntegrator::Li(const RayDifferential &r, const Scene &scene,
             if (Ld.IsBlack()) ++zeroRadiancePaths;
             CHECK_GE(Ld.y(), 0.f);
             L += Ld;
+            //std::cout << "Add Ld" << Ld << ", beta: " << beta << std::endl;
         }
 
         // Sample BSDF to get new path direction
@@ -184,6 +190,7 @@ Spectrum PathIntegrator::Li(const RayDifferential &r, const Scene &scene,
         }
     }
     ReportValue(pathLength, bounces);
+    //std::cout << "Return L: " << L << std::endl;
     return L;
 }
 

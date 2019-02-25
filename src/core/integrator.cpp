@@ -101,8 +101,10 @@ Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene,
     const std::shared_ptr<Light> &light = scene.lights[lightNum];
     Point2f uLight = sampler.Get2D();
     Point2f uScattering = sampler.Get2D();
-    return EstimateDirect(it, uScattering, *light, uLight,
-                          scene, sampler, arena, handleMedia) / lightPdf;
+    auto Ldirect = EstimateDirect(it, uScattering, *light, uLight, scene, sampler, arena, handleMedia);
+    auto Ld = Ldirect / lightPdf;
+    //std::cout << "UniformSampleOneLight Ld: " << Ld << ", Ldirect: " << Ldirect << ", lightPdf: " << lightPdf << std::endl;
+    return Ld;
 }
 
 Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
@@ -158,6 +160,7 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
                     Float weight =
                         PowerHeuristic(1, lightPdf, 1, scatteringPdf);
                     Ld += f * Li * weight / lightPdf;
+                    //std::cout << "EstimateDirect add Ld: " << Ld << ", f: " << f << ", Li: " << ", weight: " << weight << ", lightPdf: " << lightPdf << std::endl;
                 }
             }
         }
@@ -189,7 +192,10 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
             Float weight = 1;
             if (!sampledSpecular) {
                 lightPdf = light.Pdf_Li(it, wi);
-                if (lightPdf == 0) return Ld;
+                if (lightPdf == 0) {
+                        //std::cout << "EstimateDirect early Ld: " << Ld << std::endl;
+                        return Ld;
+                }
                 weight = PowerHeuristic(1, scatteringPdf, 1, lightPdf);
             }
 
@@ -211,6 +217,7 @@ Spectrum EstimateDirect(const Interaction &it, const Point2f &uScattering,
             if (!Li.IsBlack()) Ld += f * Li * Tr * weight / scatteringPdf;
         }
     }
+    //std::cout << "EstimateDirect Ld " << Ld << std::endl;
     return Ld;
 }
 
@@ -229,13 +236,20 @@ void SamplerIntegrator::Render(const Scene &scene) {
     Preprocess(scene, *sampler);
     // Render image tiles in parallel
 
-    // Compute number of tiles, _nTiles_, to use for parallel rendering
-    Bounds2i sampleBounds = camera->film->GetSampleBounds();
-
-    // Single ray
-    //int x = 150;
-    //int y = 125;
-    //Bounds2i sampleBounds = Bounds2i(Point2i(x, y), Point2i(x+1, y+1));
+    Bounds2i sampleBounds;
+    bool singleRay = false;
+    if (singleRay) {
+        int x = 11;
+        int y = 1;
+        int dx = 1;
+        int dy = 1;
+        sampleBounds = Bounds2i(Point2i(x, y), Point2i(x+dx, y+dy));
+        std::cout << sampleBounds << std::endl;
+    } else {
+        // Compute number of tiles, _nTiles_, to use for parallel rendering
+        sampleBounds = camera->film->GetSampleBounds();
+    }
+    //std::cout << "sampleBounds: " << sampleBounds << std::endl;
 
     Vector2i sampleExtent = sampleBounds.Diagonal();
     const Int tileSize = 16;
@@ -295,6 +309,7 @@ void SamplerIntegrator::Render(const Scene &scene) {
                     // Evaluate radiance along camera ray
                     Spectrum L(0.f);
                     if (rayWeight > 0) L = Li(ray, scene, *tileSampler, arena);
+                    //std::cout << "integrator radiance L: " << L << std::endl;
 
                     // Issue warning if unexpected radiance value returned
                     if (L.HasNaNs()) {

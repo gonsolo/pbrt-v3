@@ -97,6 +97,9 @@ void WriteImage(const std::string &name, const Float *rgb,
             for (int x = 0; x < resolution.x; ++x) {
 #define TO_BYTE(v) (uint8_t) Clamp(255.f * GammaCorrect(v) + 0.5f, 0.f, 255.f)
                 dst[0] = TO_BYTE(rgb[3 * (y * resolution.x + x) + 0]);
+                //std::cout << "rgb:   " << rgb[3 * (y * resolution.x + x) + 0] << std::endl;
+                //std::cout << "gamma: " << GammaCorrect(rgb[3 * (y * resolution.x + x) + 0]) << std::endl;
+                //std::cout << "dst:   " << (int)dst[0] << std::endl;
                 dst[1] = TO_BYTE(rgb[3 * (y * resolution.x + x) + 1]);
                 dst[2] = TO_BYTE(rgb[3 * (y * resolution.x + x) + 2]);
 #undef TO_BYTE
