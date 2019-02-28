@@ -75,6 +75,32 @@
 #include <string.h>
 #include "logging.h"
 
+// Platform-specific definitions
+#if defined(_WIN32) || defined(_WIN64)
+  #define PBRT_IS_WINDOWS
+#endif
+
+#if defined(_MSC_VER)
+  #define PBRT_IS_MSVC
+  #if _MSC_VER == 1800
+    #define snprintf _snprintf
+  #endif
+#endif
+
+#ifndef PBRT_L1_CACHE_LINE_SIZE
+  #define PBRT_L1_CACHE_LINE_SIZE 64
+#endif
+
+#include <stdint.h>
+#if defined(PBRT_IS_MSVC)
+#include <float.h>
+#include <intrin.h>
+#pragma warning(disable : 4305)  // double constant assigned to float
+#pragma warning(disable : 4244)  // int -> float conversion
+#pragma warning(disable : 4843)  // double -> float conversion
+#pragma warning(disable : 4267)  // size_t -> int
+#pragma warning(disable : 4838)  // another double -> int
+#endif
 
 // Global Macros
 #define ALLOCA(TYPE, COUNT) (TYPE *) alloca((COUNT) * sizeof(TYPE))
@@ -107,12 +133,16 @@ class SurfaceInteraction;
 class Shape;
 class Primitive;
 class GeometricPrimitive;
+class TransformedPrimitive;
 template <int nSpectrumSamples>
 class CoefficientSpectrum;
 class RGBSpectrum;
 class SampledSpectrum;
-typedef RGBSpectrum Spectrum;
-// typedef SampledSpectrum Spectrum;
+#ifdef PBRT_SAMPLED_SPECTRUM
+  typedef SampledSpectrum Spectrum;
+#else
+  typedef RGBSpectrum Spectrum;
+#endif
 class Camera;
 struct CameraSample;
 class ProjectiveCamera;
@@ -141,9 +171,9 @@ struct Distribution1D;
 class Distribution2D;
 #define PBRT_FLOAT_AS_DOUBLE // gonzo
 #ifdef PBRT_FLOAT_AS_DOUBLE
-typedef double Float;
+  typedef double Float;
 #else
-typedef float Float;
+  typedef float Float;
 #endif  // PBRT_FLOAT_AS_DOUBLE
 
 // Assume 64 bit for now
@@ -160,11 +190,19 @@ class ParamSet;
 template <typename T>
 struct ParamSetItem;
 struct Options {
+    Options() {
+        cropWindow[0][0] = 0;
+        cropWindow[0][1] = 1;
+        cropWindow[1][0] = 0;
+        cropWindow[1][1] = 1;
+    }
     int nThreads = 0;
     bool quickRender = false;
     bool quiet = false;
     bool cat = false, toPly = false;
     std::string imageFile;
+    // x0, x1, y0, y1
+    Float cropWindow[2][2];
 };
 
 extern Options PbrtOptions;
@@ -328,9 +366,16 @@ inline int Log2Int(int32_t v) { return Log2Int((uint32_t)v); }
 inline int Log2Int(uint64_t v) {
 #if defined(PBRT_IS_MSVC)
     unsigned long lz = 0;
-    if (_BitScanReverse64(&lz, v)) return lz;
-    return 0;
+#if defined(_WIN64)
+    _BitScanReverse64(&lz, v);
 #else
+    if  (_BitScanReverse(&lz, v >> 32))
+        lz += 32;
+    else
+        _BitScanReverse(&lz, v & 0xffffffff);
+#endif // _WIN64
+    return lz;
+#else  // PBRT_IS_MSVC
     return 63 - __builtin_clzll(v);
 #endif
 }
