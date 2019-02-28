@@ -66,7 +66,7 @@ void ParamSet::AddFloat(const std::string &name,
 }
 
 void ParamSet::AddInt(const std::string &name, std::unique_ptr<Int[]> values,
-                      int nValues) {
+                      Int nValues) {
     EraseInt(name);
     ADD_PARAM_TYPE(Int, ints);
 }

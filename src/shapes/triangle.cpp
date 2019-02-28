@@ -56,7 +56,7 @@ TriangleMesh::TriangleMesh(
     int nVertices, const Point3f *P, const Vector3f *S, const Normal3f *N,
     const Point2f *UV, const std::shared_ptr<Texture<Float>> &alphaMask,
     const std::shared_ptr<Texture<Float>> &shadowAlphaMask,
-    const int *fIndices)
+    const Int *fIndices)
     : nTriangles(nTriangles),
       nVertices(nVertices),
       vertexIndices(vertexIndices, vertexIndices + 3 * nTriangles),
@@ -97,7 +97,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
     Int nVertices, const Point3f *p, const Vector3f *s, const Normal3f *n,
     const Point2f *uv, const std::shared_ptr<Texture<Float>> &alphaMask,
     const std::shared_ptr<Texture<Float>> &shadowAlphaMask,
-    const int *faceIndices) {
+    const Int *faceIndices) {
     std::shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>(
         *ObjectToWorld, nTriangles, vertexIndices, nVertices, p, s, n, uv,
         alphaMask, shadowAlphaMask, faceIndices);
@@ -110,9 +110,9 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
 }
 
 bool WritePlyFile(const std::string &filename, int nTriangles,
-                  const int *vertexIndices, int nVertices, const Point3f *P,
+                  const Int *vertexIndices, int nVertices, const Point3f *P,
                   const Vector3f *S, const Normal3f *N, const Point2f *UV,
-                  const int *faceIndices) {
+                  const Int *faceIndices) {
     p_ply plyFile =
         ply_create(filename.c_str(), PLY_DEFAULT, PlyErrorCallback, 0, nullptr);
     if (plyFile == nullptr)
@@ -708,7 +708,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMeshShape(
         }
 
     int nfi;
-    const int *faceIndices = params.FindInt("faceIndices", &nfi);
+    const Int *faceIndices = params.FindInt("faceIndices", &nfi);
     if (faceIndices && nfi != nvi / 3) {
         Error("Number of face indices, %d, doesn't match number of faces, %d",
               nfi, nvi / 3);

@@ -58,7 +58,7 @@ Light::~Light() {}
 
 bool VisibilityTester::Unoccluded(const Scene &scene) const {
     auto notIntersected = !scene.IntersectP(p0.SpawnRayTo(p1));
-    std::cout << "Unoccluded: " << p0.p << " " << p1.p << " " << notIntersected << std::endl;
+    //std::cout << "Unoccluded: " << p0.p << " " << p1.p << " " << notIntersected << std::endl;
     return notIntersected;
 }
 

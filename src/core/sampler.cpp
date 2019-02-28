@@ -144,7 +144,7 @@ void GlobalSampler::StartPixel(const Point2i &p) {
     Sampler::StartPixel(p);
     dimension = 0;
     intervalSampleIndex = GetIndexForSample(0);
-    std::cout << "StartPixel: " << intervalSampleIndex << std::endl;
+    //std::cout << "StartPixel: " << intervalSampleIndex << std::endl;
     //std::cout << "Start Pixel: intervalSampleIndex: " << intervalSampleIndex << std::endl;
     // Compute _arrayEndDim_ for dimensions used for array samples
     arrayEndDim =
@@ -176,14 +176,14 @@ void GlobalSampler::StartPixel(const Point2i &p) {
 bool GlobalSampler::StartNextSample() {
     dimension = 0;
     intervalSampleIndex = GetIndexForSample(currentPixelSampleIndex + 1);
-    std::cout << "StartNextSample: " << intervalSampleIndex << std::endl;
+    //std::cout << "StartNextSample: " << intervalSampleIndex << std::endl;
     return Sampler::StartNextSample();
 }
 
 bool GlobalSampler::SetSampleNumber(int64_t sampleNum) {
     dimension = 0;
     intervalSampleIndex = GetIndexForSample(sampleNum);
-    std::cout << "SetSampleNumber: " << intervalSampleIndex << std::endl;
+    //std::cout << "SetSampleNumber: " << intervalSampleIndex << std::endl;
     return Sampler::SetSampleNumber(sampleNum);
 }
 

@@ -462,7 +462,7 @@ std::vector<std::shared_ptr<Shape>> MakeShapes(const std::string &name,
     else if (name == "trianglemesh") {
         if (PbrtOptions.toPly) {
             int nvi;
-            const int *vi = paramSet.FindInt("indices", &nvi);
+            const Int *vi = paramSet.FindInt("indices", &nvi);
 
             if (nvi < 500) {
                 // It's a small mesh; don't bother with a PLY file after all.
@@ -494,7 +494,7 @@ std::vector<std::shared_ptr<Shape>> MakeShapes(const std::string &name,
                 const Normal3f *N = paramSet.FindNormal3f("N", &nni);
                 const Vector3f *S = paramSet.FindVector3f("S", &nsi);
                 int nfi;
-                const int *faceIndices = paramSet.FindInt("faceIndices", &nfi);
+                const Int *faceIndices = paramSet.FindInt("faceIndices", &nfi);
                 if (faceIndices) CHECK_EQ(nfi, nvi / 3);
 
                 if (!WritePlyFile(fn.c_str(), nvi / 3, vi, npi, P, S, N, uvs,

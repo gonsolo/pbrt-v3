@@ -545,11 +545,11 @@ static void AddParam(ParamSet &ps, const ParamListItem &item,
             }
         }
 
-        int nItems = item.size;
+        Int nItems = item.size;
         if (type == PARAM_TYPE_INT) {
             // parser doesn't handle ints, so convert from doubles here....
             int nAlloc = nItems;
-            std::unique_ptr<int[]> idata(new int[nAlloc]);
+            std::unique_ptr<Int[]> idata(new Int[nAlloc]);
             for (int j = 0; j < nAlloc; ++j)
                 idata[j] = int(item.doubleValues[j]);
             ps.AddInt(name, std::move(idata), nItems);

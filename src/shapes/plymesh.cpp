@@ -46,8 +46,8 @@ struct CallbackContext {
     Point3f *p;
     Normal3f *n;
     Point2f *uv;
-    int *indices;
-    int *faceIndices;
+    Int *indices;
+    Int *faceIndices;
     int indexCtr, faceIndexCtr;
     int face[4];
     bool error;
@@ -243,7 +243,7 @@ std::vector<std::shared_ptr<Shape>> CreatePLYMesh(
     if (ply_set_read_cb(ply, "face", "face_indices", rply_face_callback, &context,
                         1))
         // Extra space in case they're quads
-        context.faceIndices = new int[faceCount];
+        context.faceIndices = new Int[faceCount];
 
     if (!ply_read(ply)) {
         Error("%s: unable to read the contents of PLY file",

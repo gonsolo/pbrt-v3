@@ -39,7 +39,7 @@
 #define PBRT_CORE_PBRT_H
 
 // core/pbrt.h*
-#include "port.h"
+//#include "port.h"
 
 // Platform-specific definitions
 #if defined(PBRT_IS_MSVC)

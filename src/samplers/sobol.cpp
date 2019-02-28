@@ -41,7 +41,7 @@ namespace pbrt {
 // SobolSampler Method Definitions
 Int SobolSampler::GetIndexForSample(Int sampleNum) const {
     auto result = SobolIntervalToIndex(log2Resolution, sampleNum, Point2i(currentPixel - sampleBounds.pMin));
-    std::cout << __FUNCTION__ << " " << log2Resolution << " " << Point2i(currentPixel - sampleBounds.pMin) << " " << result << std::endl;
+    //std::cout << __FUNCTION__ << " " << log2Resolution << " " << Point2i(currentPixel - sampleBounds.pMin) << " " << result << std::endl;
     return result;
 }
 

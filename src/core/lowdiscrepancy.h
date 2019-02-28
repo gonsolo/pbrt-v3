@@ -229,7 +229,7 @@ inline void Sobol2D(int nSamplesPerPixelSample, int nPixelSamples,
 inline uint64_t SobolIntervalToIndex(const uint32_t m, uint64_t frame,
                                      const Point2i &p) {
 
-    std::cout << __FUNCTION__ << " " << m << " " << frame << " " << p << std::endl;
+    //std::cout << __FUNCTION__ << " " << m << " " << frame << " " << p << std::endl;
     if (m == 0) return 0;
 
     const uint32_t m2 = m << 1;
@@ -282,7 +282,7 @@ inline double SobolSampleDouble(int64_t a, size_t dimension, uint64_t scramble) 
       "may want to use a Sampler without a dimension limit like "
       "\"02sequence\".";
 
-    std::cout << "SobolSample " << a << " " << dimension << " " << scramble << std::endl;
+    //std::cout << "SobolSample " << a << " " << dimension << " " << scramble << std::endl;
     uint64_t result = scramble & ~ - (1LL << SobolMatrixSize);
     for (auto i = dimension * SobolMatrixSize; a != 0; a >>= 1, i++) {
         if (a & 1) result ^= SobolMatrices64[i];

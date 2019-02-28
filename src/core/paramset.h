@@ -56,7 +56,7 @@ class ParamSet {
     ParamSet() {}
     void AddFloat(const std::string &, std::unique_ptr<Float[]> v,
                   int nValues = 1);
-    void AddInt(const std::string &, std::unique_ptr<Int[]> v, int nValues);
+    void AddInt(const std::string &, std::unique_ptr<Int[]> v, Int nValues);
     void AddBool(const std::string &, std::unique_ptr<bool[]> v, int nValues);
     void AddPoint2f(const std::string &, std::unique_ptr<Point2f[]> v,
                     int nValues);

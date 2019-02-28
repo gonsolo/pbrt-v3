@@ -237,7 +237,7 @@ void SamplerIntegrator::Render(const Scene &scene) {
     // Render image tiles in parallel
 
     Bounds2i sampleBounds;
-    bool singleRay = true;
+    bool singleRay = false;
     if (singleRay) {
         int x = 57;
         int y = 11;

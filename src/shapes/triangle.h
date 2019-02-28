@@ -55,7 +55,7 @@ struct TriangleMesh {
                  const Vector3f *S, const Normal3f *N, const Point2f *uv,
                  const std::shared_ptr<Texture<Float>> &alphaMask,
                  const std::shared_ptr<Texture<Float>> &shadowAlphaMask,
-                 const int *faceIndices);
+                 const Int *faceIndices);
 
     // TriangleMesh Data
     const int nTriangles, nVertices;
@@ -119,7 +119,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(
     const Vector3f *s, const Normal3f *n, const Point2f *uv,
     const std::shared_ptr<Texture<Float>> &alphaTexture,
     const std::shared_ptr<Texture<Float>> &shadowAlphaTexture,
-    const int *faceIndices = nullptr);
+    const Int *faceIndices = nullptr);
 std::vector<std::shared_ptr<Shape>> CreateTriangleMeshShape(
     const Transform *o2w, const Transform *w2o, bool reverseOrientation,
     const ParamSet &params,
@@ -127,9 +127,9 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMeshShape(
         nullptr);
 
 bool WritePlyFile(const std::string &filename, int nTriangles,
-                  const int *vertexIndices, int nVertices, const Point3f *P,
+                  const Int *vertexIndices, int nVertices, const Point3f *P,
                   const Vector3f *S, const Normal3f *N, const Point2f *UV,
-                  const int *faceIndices);
+                  const Int *faceIndices);
 
 }  // namespace pbrt
 
