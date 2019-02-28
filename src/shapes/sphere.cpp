@@ -231,12 +231,16 @@ Interaction Sphere::Sample(const Point2f &u, Float *pdf) const {
 
 Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
                            Float *pdf) const {
+
+    Point2f gonzoU(0.993988037109375, 0.344696044921875);
+
     Point3f pCenter = (*ObjectToWorld)(Point3f(0, 0, 0));
 
     // Sample uniformly on sphere if $\pt{}$ is inside it
     Point3f pOrigin =
         OffsetRayOrigin(ref.p, ref.pError, ref.n, pCenter - ref.p);
     if (DistanceSquared(pOrigin, pCenter) <= radius * radius) {
+	std::cout << "Not this!" << std::endl;
         Interaction intr = Sample(u, pdf);
         Vector3f wi = intr.p - ref.p;
         if (wi.LengthSquared() == 0)
@@ -261,17 +265,20 @@ Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
     // Compute $\theta$ and $\phi$ values for sample in cone
     Float sinThetaMax2 = radius * radius / DistanceSquared(ref.p, pCenter);
     Float cosThetaMax = std::sqrt(std::max((Float)0, 1 - sinThetaMax2));
-    Float cosTheta = (1 - u[0]) + u[0] * cosThetaMax;
+    Float cosTheta = (1 - gonzoU[0]) + gonzoU[0] * cosThetaMax;
     Float sinTheta = std::sqrt(std::max((Float)0, 1 - cosTheta * cosTheta));
-    Float phi = u[1] * 2 * Pi;
+    Float phi = gonzoU[1] * 2 * Pi;
 
     // Compute angle $\alpha$ from center of sphere to sampled point on surface
     Float dc = Distance(ref.p, pCenter);
     Float ds = dc * cosTheta -
                std::sqrt(std::max(
                    (Float)0, radius * radius - dc * dc * sinTheta * sinTheta));
-    Float cosAlpha = (dc * dc + radius * radius - ds * ds) / (2 * dc * radius);
+    Float cosAlpha = (dc * dc - radius * radius - ds * ds) / (2 * dc * radius);
+    //std::cout << "cosAlpha, dc, radius, ds: " << cosAlpha << " " << dc << " " << radius << " " << ds << std::endl;
+    //std::cout << "first, second: " << dc*dc - radius*radius - ds*ds << " " << 2*dc*radius << std::endl;
     Float sinAlpha = std::sqrt(std::max((Float)0, 1 - cosAlpha * cosAlpha));
+
 
     // Compute surface normal and sampled point on sphere
     Vector3f nWorld =
@@ -287,6 +294,8 @@ Interaction Sphere::Sample(const Interaction &ref, const Point2f &u,
 
     // Uniform cone PDF.
     *pdf = 1 / (2 * Pi * (1 - cosThetaMax));
+    std::cout << "Cone sampling with " << gonzoU << " from " << ref.p << " to sphere with center : " << pCenter << " and radius " << radius << " gives " << pWorld << std::endl;
+    
 
     return it;
 }

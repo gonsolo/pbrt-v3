@@ -41,11 +41,13 @@ namespace pbrt {
 // SobolSampler Method Definitions
 Int SobolSampler::GetIndexForSample(Int sampleNum) const {
     auto result = SobolIntervalToIndex(log2Resolution, sampleNum, Point2i(currentPixel - sampleBounds.pMin));
-    //std::cout << "GetIndexForSample: log2Resolution: " << log2Resolution << ", sampleNum: " << sampleNum << ", currentPixel: " << currentPixel << ", pMin: " << sampleBounds.pMin << ", result: " << result << std::endl;
+    std::cout << __FUNCTION__ << " " << log2Resolution << " " << Point2i(currentPixel - sampleBounds.pMin) << " " << result << std::endl;
     return result;
 }
 
 Float SobolSampler::SampleDimension(int64_t index, Int dim) const {
+
+    //std::cout << "SampleDimension: " << index << " " << dim << std::endl;
     if (dim >= NumSobolDimensions)
         LOG(FATAL) << StringPrintf("SobolSampler can only sample up to %d "
                                    "dimensions! Exiting.",

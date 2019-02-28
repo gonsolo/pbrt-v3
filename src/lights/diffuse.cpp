@@ -70,6 +70,7 @@ Spectrum DiffuseAreaLight::Sample_Li(const Interaction &ref, const Point2f &u,
                                      VisibilityTester *vis) const {
     ProfilePhase _(Prof::LightSample);
     Interaction pShape = shape->Sample(ref, u, pdf);
+    std::cout << "Sample_Li: " << pShape.p << " " << u << std::endl;
     pShape.mediumInterface = mediumInterface;
     if (*pdf == 0 || (pShape.p - ref.p).LengthSquared() == 0) {
         *pdf = 0;

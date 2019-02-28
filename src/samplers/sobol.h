@@ -58,6 +58,7 @@ class SobolSampler : public GlobalSampler {
         resolution = RoundUpPow2(
             std::max(sampleBounds.Diagonal().x, sampleBounds.Diagonal().y));
         log2Resolution = Log2Int(resolution);
+	std::cout << "log2Resolution: " << log2Resolution << " " << resolution << " " << sampleBounds << std::endl;
         CHECK_EQ(1 << log2Resolution, resolution);
     }
     Int GetIndexForSample(Int sampleNum) const;
